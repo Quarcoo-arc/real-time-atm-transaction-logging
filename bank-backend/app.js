@@ -1,52 +1,104 @@
 const crypto = require("node:crypto");
 const { promisify } = require("util");
 const asyncify = require("express-asyncify");
+const session = require("express-session");
+const MongoStore = require("connect-mongo");
+const { db, User } = require("./models.js");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
+const bodyParser = require("body-parser");
+const nodemailer = require("nodemailer");
 const express = require("express");
-const app = express();
-const port = 3000;
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+require("dotenv").config();
+
+const app = asyncify(express());
+
+const port = 5000;
+
+const SESSOIN_COOKIE_MAX_AGE_IN_MS = 5 * 60 * 1000; // 5 minutes
+
+app.use(bodyParser.json());
+
+passport.serializeUser((user, cb) => cb(null, user));
+passport.deserializeUser((user, cb) => cb(null, user));
+
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email",
+    },
+    (email, password, cb) => {
+      const user = User.find({ email }).exec();
+      const isAuthenticated = user ? user.verifyPasswordSync(password) : false;
+      cb(null, isAuthenticated ? isAuthenticated : false);
+    }
+  )
+);
+
+console.log("MongoUrl: ", process.env.mongodburl);
+
+app.use(
+  session({
+    secret: process.env.SESSION_COOKIE_SECRET,
+    saveUninitialized: false,
+    resave: false,
+    cookie: { secure: process.env.SESSION_COOKIE_IS_SECURE },
+    store: MongoStore.create({
+      mongoUrl: process.env.mongodburl,
+      ttl: SESSOIN_COOKIE_MAX_AGE_IN_MS,
+    }),
+  })
+);
+
+app.use(passport.authenticate("session"));
+
+// Send email
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
 });
 
-/**
- * Database Models
- *
- * **User**
- * account no.
- * email
- * password
- * name
- * acc balance
- * ATM PIN
- *
- * **Transaction**
- * Transaction ID
- * Transaction type: Deposit/Withdrawal
- * Timestamp
- * Account No.
- * Amount
- * Status: Pending / Completed / Failed
- *
- * **Errors**
- * Transaction ID
- * Error Type: User / ATM / System
- * - User - Inadequate Funds
- * - ATM - Indadequate Funds
- * - System - System Malfunctioning
- *
- * **Globals**  - Static Variables
- * ATM Balance
- * Errors
- *
- * **Authorities**
- * Email
- * Passoword
- * IsActive (Active authority receives the email)
- *
- *
- *
- */
+app.get("/", (req, res) => {
+  if (req.user) {
+    res.send(`Welcome ${req.user.name}`);
+  } else {
+    res.send("Not Logged In!");
+  }
+});
+
+app.post(
+  "/login",
+  passport.authenticate("local", { failureMessage: true }),
+  (req, res) => {
+    res.send(`${req.user.name}, you have been logged in successfully`);
+  }
+);
+
+app.post("/signup", async (req, res, next) => {
+  try {
+    const user = new User({
+      email: req.body.email,
+      password: req.body.password,
+      name: req.body.name,
+      pin: req.body.pin,
+    });
+
+    const result = await user.save();
+    console.log(result);
+    res.send(result);
+  } catch (error) {
+    res.send({
+      success: false,
+      error,
+    });
+  }
+});
 
 /**
  * API Endpoints
