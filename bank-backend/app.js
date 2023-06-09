@@ -36,8 +36,6 @@ passport.use(
   )
 );
 
-console.log("MongoUrl: ", process.env.mongodburl);
-
 app.use(
   session({
     secret: process.env.SESSION_COOKIE_SECRET,
