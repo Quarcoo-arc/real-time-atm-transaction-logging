@@ -13,7 +13,12 @@ const CardDeck = () => {
   return (
     <CardsWrapper>
       {cardsContentArr.map((card, idx) => (
-        <Card key={idx} content={card} selected={card === selectedCard} />
+        <Card
+          key={idx}
+          content={card}
+          selected={card === selectedCard}
+          onClick={() => setSelectedCard(card)}
+        />
       ))}
     </CardsWrapper>
   );
