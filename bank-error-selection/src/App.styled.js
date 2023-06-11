@@ -1,10 +1,17 @@
 import styled from "styled-components";
 
 const Background = styled.div`
-  width: 100%;
+  display: flex;
+  z-index: -1;
+  position: absolute;
+  justify-content: center;
+  place-items: center;
   height: 100%;
-  position: relative;
-  min-height: 100vh;
+  width: 100%;
+  img {
+    width: 80%;
+    opacity: 0.6;
+  }
 `;
 
 export { Background };
