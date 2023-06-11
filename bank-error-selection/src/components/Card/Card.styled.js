@@ -15,13 +15,15 @@ const CardWrapper = styled.div`
   cursor: pointer;
   box-sizing: border-box;
   padding: 0.5rem 1rem;
+  &:hover {
+    background-color: #e1d4bb;
+  }
   ${(props) =>
     props.selected &&
     css`
       background-color: #c2993a;
       color: white;
     `}
-
   @media screen and (max-width: 768px) {
     width: 15rem;
     height: 7rem;
