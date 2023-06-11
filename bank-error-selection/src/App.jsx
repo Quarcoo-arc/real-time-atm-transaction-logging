@@ -1,5 +1,5 @@
 import { Background } from "./App.styled";
-import { Logo, Heading } from "./components";
+import { Logo, Heading, CardDeck } from "./components";
 import backgroundImg from "./assets/background.png";
 
 function App() {
@@ -10,6 +10,7 @@ function App() {
       </Background>
       <Logo />
       <Heading />
+      <CardDeck />
     </>
   );
 }
