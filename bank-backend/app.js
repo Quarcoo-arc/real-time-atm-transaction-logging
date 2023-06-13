@@ -111,7 +111,7 @@ app.post("/signup", async (req, res, next) => {
     });
 
     const result = await user.save();
-    console.log(result);
+
     res.send(result);
     // TODO: Send email upon successful account creation
   } catch (error) {
@@ -122,8 +122,26 @@ app.post("/signup", async (req, res, next) => {
   }
 });
 
-app.get("/deposit", ensureLoggedIn, (req, res) => {
-  res.json({ success: true, message: "Depositing..." });
+app.post("/deposit", ensureLoggedIn, async (req, res) => {
+  try {
+    if (!req.body || !req.body.amount) {
+      res.status(400);
+      res.json({
+        success: false,
+        error: "Invalid request body!",
+      });
+    }
+
+    const user = await User.findById(req.user.id);
+    user.accountBalance = +user.accountBalance + req.body.amount;
+    const result = await user.save();
+    res.send({ success: true, data: result });
+  } catch (error) {
+    res.json({
+      success: false,
+      error,
+    });
+  }
 });
 
 /**
