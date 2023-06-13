@@ -2,6 +2,7 @@ const crypto = require("node:crypto");
 const { promisify } = require("util");
 const asyncify = require("express-asyncify");
 const session = require("express-session");
+const connect_ensure_login = require("connect-ensure-login");
 const MongoStore = require("connect-mongo");
 const { db, User } = require("./models.js");
 const passport = require("passport");
@@ -11,6 +12,10 @@ const nodemailer = require("nodemailer");
 const express = require("express");
 
 require("dotenv").config();
+
+const ensureLogIn = connect_ensure_login.ensureLoggedIn;
+
+const ensureLoggedIn = ensureLogIn();
 
 const app = asyncify(express());
 
@@ -23,25 +28,42 @@ app.use(bodyParser.json());
 passport.serializeUser((user, cb) => cb(null, user));
 passport.deserializeUser((user, cb) => cb(null, user));
 
+const verifyPassword = (password, encryptedPassword) =>
+  User.encryptPassword(password, (err, encrtyptedText) => {
+    if (err) {
+      return false;
+    } else {
+      return encryptedPassword === encrtyptedText;
+    }
+  });
+
 passport.use(
   new LocalStrategy(
     {
       usernameField: "email",
     },
-    (email, password, cb) => {
-      const user = User.find({ email }).exec();
-      const isAuthenticated = user ? user.verifyPasswordSync(password) : false;
-      cb(null, isAuthenticated ? isAuthenticated : false);
+    async (email, password, cb) => {
+      const user = await User.findOne({ email }).exec();
+      const isAuthenticated = user
+        ? verifyPassword(password, user.password)
+        : false;
+      cb(
+        null,
+        isAuthenticated
+          ? { id: user._id, email: user.email, name: user.name }
+          : false
+      );
     }
   )
 );
+
+app.use(passport.initialize());
 
 app.use(
   session({
     secret: process.env.SESSION_COOKIE_SECRET,
     saveUninitialized: false,
     resave: false,
-    cookie: { secure: process.env.SESSION_COOKIE_IS_SECURE },
     store: MongoStore.create({
       mongoUrl: process.env.mongodburl,
       ttl: SESSOIN_COOKIE_MAX_AGE_IN_MS,
@@ -75,6 +97,7 @@ app.post(
   passport.authenticate("local", { failureMessage: true }),
   (req, res) => {
     res.send(`${req.user.name}, you have been logged in successfully`);
+    // TODO: Send email upon login
   }
 );
 
@@ -90,12 +113,17 @@ app.post("/signup", async (req, res, next) => {
     const result = await user.save();
     console.log(result);
     res.send(result);
+    // TODO: Send email upon successful account creation
   } catch (error) {
     res.send({
       success: false,
       error,
     });
   }
+});
+
+app.get("/deposit", ensureLoggedIn, (req, res) => {
+  res.json({ success: true, message: "Depositing..." });
 });
 
 /**
@@ -124,6 +152,15 @@ app.post("/signup", async (req, res, next) => {
  * payload - {old_PIN, newPIN}
  *
  */
+
+app.use((req, res, next) => next(createError(401)));
+
+app.use((err, req, res, next) => {
+  res.locals.message = err.message;
+  res.locals.error = err;
+  res.status(err.status || 500);
+  res.json({ success: false, error: err });
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
