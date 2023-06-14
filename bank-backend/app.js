@@ -1,10 +1,7 @@
-const crypto = require("node:crypto");
-const { promisify } = require("util");
-const asyncify = require("express-asyncify");
 const session = require("express-session");
 const connect_ensure_login = require("connect-ensure-login");
 const MongoStore = require("connect-mongo");
-const { db, User } = require("./models.js");
+const { db, User, Transaction } = require("./models.js");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bodyParser = require("body-parser");
@@ -17,7 +14,7 @@ const ensureLogIn = connect_ensure_login.ensureLoggedIn;
 
 const ensureLoggedIn = ensureLogIn();
 
-const app = asyncify(express());
+const app = express();
 
 const port = 5000;
 
@@ -123,11 +120,18 @@ app.post("/signup", async (req, res, next) => {
 });
 
 app.post("/deposit", ensureLoggedIn, async (req, res) => {
+  /** TODO:
+   * Upon a failed deposit, a transaction document should be created with
+   * the transaction details.
+   *
+   * Transactions should be logged unto bank-atm-interface in real time
+   *
+   *
+   */
   try {
-    // TODO: Validate amount
     if (!req.body || !req.body.amount || isNaN(req.body.amount)) {
       res.status(400);
-      res.json({
+      return res.json({
         success: false,
         error: "Invalid request body!",
       });
@@ -136,8 +140,27 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
     const user = await User.findById(req.user.id);
     user.accountBalance = +user.accountBalance + +req.body.amount;
     const result = await user.save();
+
+    const transaction = new Transaction({
+      accountNumber: user.accountNumber,
+      type: "deposit",
+      amount: req.body.amount,
+      status: "completed",
+      description: "Operation complete",
+    });
+    await transaction.save();
+
     res.send({ success: true, data: { currentBalance: user.accountBalance } });
   } catch (error) {
+    const user = await User.findById(req.user.id);
+    const transaction = new Transaction({
+      accountNumber: user.accountNumber,
+      type: "deposit",
+      amount: req.body.amount,
+      status: "failed",
+      description: error.message ? error.message : "Internal Server Error",
+    });
+    await transaction.save();
     res.json({
       success: false,
       error,
