@@ -168,6 +168,23 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
   }
 });
 
+app.get("/account-balance", ensureLoggedIn, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({
+      succes: true,
+      data: {
+        accountBalance: user.accountBalance,
+      },
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      error,
+    });
+  }
+});
+
 /**
  * API Endpoints
  *
