@@ -124,7 +124,8 @@ app.post("/signup", async (req, res, next) => {
 
 app.post("/deposit", ensureLoggedIn, async (req, res) => {
   try {
-    if (!req.body || !req.body.amount) {
+    // TODO: Validate amount
+    if (!req.body || !req.body.amount || isNaN(req.body.amount)) {
       res.status(400);
       res.json({
         success: false,
@@ -133,9 +134,9 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
     }
 
     const user = await User.findById(req.user.id);
-    user.accountBalance = +user.accountBalance + req.body.amount;
+    user.accountBalance = +user.accountBalance + +req.body.amount;
     const result = await user.save();
-    res.send({ success: true, data: result });
+    res.send({ success: true, data: { currentBalance: user.accountBalance } });
   } catch (error) {
     res.json({
       success: false,
