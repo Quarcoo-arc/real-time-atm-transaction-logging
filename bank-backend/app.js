@@ -185,6 +185,26 @@ app.get("/account-balance", ensureLoggedIn, async (req, res) => {
   }
 });
 
+app.get("/account-info", ensureLoggedIn, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    res.json({
+      success: true,
+      data: {
+        name: user.name,
+        accountNumber: user.accountNumber,
+        accountBalance: user.accountBalance,
+        email: user.email,
+      },
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      error,
+    });
+  }
+});
+
 /**
  * API Endpoints
  *
