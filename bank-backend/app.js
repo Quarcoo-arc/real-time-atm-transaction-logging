@@ -25,15 +25,6 @@ app.use(bodyParser.json());
 passport.serializeUser((user, cb) => cb(null, user));
 passport.deserializeUser((user, cb) => cb(null, user));
 
-const verifyPassword = (password, encryptedPassword) =>
-  User.encryptPassword(password, (err, encrtyptedText) => {
-    if (err) {
-      return false;
-    } else {
-      return encryptedPassword === encrtyptedText;
-    }
-  });
-
 passport.use(
   new LocalStrategy(
     {
@@ -42,7 +33,7 @@ passport.use(
     async (email, password, cb) => {
       const user = await User.findOne({ email }).exec();
       const isAuthenticated = user
-        ? verifyPassword(password, user.password)
+        ? await user.verifyPasswordSync(password, user.password)
         : false;
       cb(
         null,
@@ -104,7 +95,7 @@ app.post("/signup", async (req, res, next) => {
       email: req.body.email,
       password: req.body.password,
       name: req.body.name,
-      pin: req.body.pin,
+      pin: req.body.pin, // TODO: Check to make sure pin is 4 digits
     });
 
     const result = await user.save();
@@ -201,6 +192,58 @@ app.get("/account-info", ensureLoggedIn, async (req, res) => {
     res.json({
       success: false,
       error,
+    });
+  }
+});
+
+app.post("/change-pin", ensureLoggedIn, async (req, res) => {
+  try {
+    if (!req.body || !req.body.oldPIN || !req.body.newPIN) {
+      res.status(400);
+      return res.json({
+        success: false,
+        error: "Bad request",
+      });
+    }
+    if (
+      !Number.isInteger(+req.body.newPIN) ||
+      req.body.newPIN.toString().length !== 4
+    ) {
+      res.status(400);
+      return res.json({
+        success: false,
+        error: "PIN should be a sequence of 4 digits",
+      });
+    }
+    const user = await User.findById(req.user.id).exec();
+
+    const result = await user.verifyPinSync(req.body.oldPIN, user.pin);
+
+    if (!result) {
+      res.status(400);
+      return res.json({
+        success: false,
+        message: "Invalid PIN",
+      });
+    }
+
+    user.pin = req.body.newPIN;
+    const saved = await user.save();
+    if (saved) {
+      res.send({
+        success: true,
+        message: "PIN was changed successfully",
+      });
+    } else {
+      res.send({
+        success: false,
+        message: "PIN change was not successful",
+      });
+    }
+  } catch (error) {
+    res.json({
+      success: false,
+      error: error.stack,
     });
   }
 });
