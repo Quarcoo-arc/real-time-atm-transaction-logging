@@ -61,6 +61,36 @@ app.use(
 
 app.use(passport.authenticate("session"));
 
+const checkPIN = async (req, res, next) => {
+  try {
+    if (!req.body || !req.body.pin) {
+      res.status(400);
+      return res.json({
+        success: false,
+        error: "Bad request",
+      });
+    }
+    const user = await User.findById(req.user.id).exec();
+
+    const result = await user.verifyPinSync(req.body.pin, user.pin);
+
+    if (!result) {
+      res.status(400);
+      return res.json({
+        success: false,
+        message: "Invalid PIN",
+      });
+    }
+    next();
+  } catch (error) {
+    res.status(400);
+    return res.json({
+      success: false,
+      error: error.stack,
+    });
+  }
+};
+
 // Send email
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -159,7 +189,69 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
   }
 });
 
-app.get("/account-balance", ensureLoggedIn, async (req, res) => {
+app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
+  try {
+    if (
+      !req.body ||
+      !req.body.amount ||
+      isNaN(req.body.amount) ||
+      +req.body.amount < 0
+    ) {
+      res.status(400);
+      return res.json({
+        success: false,
+        error: "Invalid request body!",
+      });
+    }
+
+    const user = await User.findById(req.user.id).exec();
+    if (+req.body.amount > +user.accountBalance) {
+      const transaction = new Transaction({
+        accountNumber: user.accountNumber,
+        type: "withdrawal",
+        amount: req.body.amount,
+        status: "failed",
+        description: "Insufficient Funds",
+      });
+      await transaction.save();
+
+      res.status(400);
+      return res.json({
+        success: false,
+        error: "Insufficient Funds",
+      });
+    }
+    user.accountBalance = +user.accountBalance - +req.body.amount;
+    const result = await user.save();
+
+    const transaction = new Transaction({
+      accountNumber: user.accountNumber,
+      type: "withdrawal",
+      amount: req.body.amount,
+      status: "completed",
+      description: "Operation complete",
+    });
+    await transaction.save();
+    res.send({ success: true, data: { currentBalance: user.accountBalance } });
+  } catch (error) {
+    const user = await User.findById(req.user.id);
+    const transaction = new Transaction({
+      accountNumber: user.accountNumber,
+      type: "withdrawal",
+      amount: req.body.amount,
+      status: "failed",
+      description: error.message ? error.message : "Internal Server Error",
+    });
+    await transaction.save();
+    res.status(500);
+    res.json({
+      success: false,
+      error,
+    });
+  }
+});
+
+app.get("/account-balance", ensureLoggedIn, checkPIN, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     res.json({
@@ -176,7 +268,7 @@ app.get("/account-balance", ensureLoggedIn, async (req, res) => {
   }
 });
 
-app.get("/account-info", ensureLoggedIn, async (req, res) => {
+app.get("/account-info", ensureLoggedIn, checkPIN, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     res.json({
@@ -195,36 +287,6 @@ app.get("/account-info", ensureLoggedIn, async (req, res) => {
     });
   }
 });
-
-const checkPIN = async (req, res, next) => {
-  try {
-    if (!req.body || !req.body.pin) {
-      res.status(400);
-      return res.json({
-        success: false,
-        error: "Bad request",
-      });
-    }
-    const user = await User.findById(req.user.id).exec();
-
-    const result = await user.verifyPinSync(req.body.pin, user.pin);
-
-    if (!result) {
-      res.status(400);
-      return res.json({
-        success: false,
-        message: "Invalid PIN",
-      });
-    }
-    next();
-  } catch (error) {
-    res.status(400);
-    return res.json({
-      success: false,
-      error: error.stack,
-    });
-  }
-};
 
 app.post("/change-pin", ensureLoggedIn, checkPIN, async (req, res) => {
   try {
