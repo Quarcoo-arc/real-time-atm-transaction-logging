@@ -196,9 +196,39 @@ app.get("/account-info", ensureLoggedIn, async (req, res) => {
   }
 });
 
-app.post("/change-pin", ensureLoggedIn, async (req, res) => {
+const checkPIN = async (req, res, next) => {
   try {
-    if (!req.body || !req.body.oldPIN || !req.body.newPIN) {
+    if (!req.body || !req.body.pin) {
+      res.status(400);
+      return res.json({
+        success: false,
+        error: "Bad request",
+      });
+    }
+    const user = await User.findById(req.user.id).exec();
+
+    const result = await user.verifyPinSync(req.body.pin, user.pin);
+
+    if (!result) {
+      res.status(400);
+      return res.json({
+        success: false,
+        message: "Invalid PIN",
+      });
+    }
+    next();
+  } catch (error) {
+    res.status(400);
+    return res.json({
+      success: false,
+      error: error.stack,
+    });
+  }
+};
+
+app.post("/change-pin", ensureLoggedIn, checkPIN, async (req, res) => {
+  try {
+    if (!req.body || !req.body.newPIN) {
       res.status(400);
       return res.json({
         success: false,
@@ -216,16 +246,6 @@ app.post("/change-pin", ensureLoggedIn, async (req, res) => {
       });
     }
     const user = await User.findById(req.user.id).exec();
-
-    const result = await user.verifyPinSync(req.body.oldPIN, user.pin);
-
-    if (!result) {
-      res.status(400);
-      return res.json({
-        success: false,
-        message: "Invalid PIN",
-      });
-    }
 
     user.pin = req.body.newPIN;
     const saved = await user.save();
