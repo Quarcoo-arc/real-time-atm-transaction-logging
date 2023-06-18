@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-const Background = styled.div`
+const BackgroundWrapper = styled.div`
   display: flex;
   z-index: -1;
   position: absolute;
@@ -14,4 +14,4 @@ const Background = styled.div`
   }
 `;
 
-export { Background };
+export { BackgroundWrapper };

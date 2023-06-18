@@ -87,7 +87,8 @@ const transactionSchema = new Schema({
   type: { type: String, required: true, enum: ["deposit", "withdrawal"] },
   timestamp: { type: Date, default: Date.now },
   amount: { type: Number, get: getAmount, set: setAmount },
-  status: { type: String, required: true, enum: ["completed", "failed"] }, // Should I add "pending"?
+  status: { type: String, required: true, enum: ["completed", "failed"] },
+  description: { type: String },
 });
 
 transactionSchema.plugin(autoInc, {
@@ -97,5 +98,8 @@ transactionSchema.plugin(autoInc, {
 });
 
 const Transaction = model("Transaction", transactionSchema);
+
+// TODO: Create document to store static content (errors, etc)
+// Update withdrawal method to check for errors and act accordingly - could be implemented as a middleware
 
 module.exports = { User, Transaction, db };

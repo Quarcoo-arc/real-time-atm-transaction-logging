@@ -1,13 +1,9 @@
-import { Background } from "./App.styled";
-import { Logo, Heading, CardDeck } from "./components";
-import backgroundImg from "./assets/background.png";
+import { Logo, Heading, CardDeck, Background } from "./components";
 
 function App() {
   return (
     <>
-      <Background>
-        <img src={backgroundImg} alt="" />
-      </Background>
+      <Background />
       <Logo />
       <Heading />
       <CardDeck />
