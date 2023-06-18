@@ -1,4 +1,4 @@
-import { Logo, Background, Heading, CardsList } from "./components";
+import { Logo, Background, Heading, CardsList, SearchBar } from "./components";
 
 function App() {
   return (
@@ -7,6 +7,7 @@ function App() {
       <Logo />
       <Heading />
       <CardsList />
+      <SearchBar />
     </>
   );
 }
