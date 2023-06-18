@@ -1,10 +1,12 @@
-import { Logo, Background } from "./components";
+import { Logo, Background, Heading, CardsList } from "./components";
 
 function App() {
   return (
     <>
       <Background />
       <Logo />
+      <Heading />
+      <CardsList />
     </>
   );
 }
