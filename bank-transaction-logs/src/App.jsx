@@ -1,4 +1,11 @@
-import { Logo, Background, Heading, CardsList, SearchBar } from "./components";
+import {
+  Logo,
+  Background,
+  Heading,
+  CardsList,
+  SearchBar,
+  Table,
+} from "./components";
 
 function App() {
   return (
@@ -8,6 +15,7 @@ function App() {
       <Heading />
       <CardsList />
       <SearchBar />
+      <Table />
     </>
   );
 }

@@ -6,7 +6,7 @@ import searchIcon from "../../assets/searchIcon.svg";
 
 const SearchBar = () => {
   const [searchString, setSearchString] = useState("");
-  const handChange = (e) => setSearchString(e.target.value);
+  const handleChange = (e) => setSearchString(e.target.value);
   return (
     <Paper
       component="form"
@@ -44,7 +44,7 @@ const SearchBar = () => {
         placeholder="Search"
         inputProps={{ "aria-label": "search" }}
         value={searchString}
-        onChange={handChange}
+        onChange={handleChange}
       />
     </Paper>
   );
