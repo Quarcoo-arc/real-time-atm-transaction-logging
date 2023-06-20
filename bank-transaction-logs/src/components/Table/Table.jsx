@@ -7,51 +7,165 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import { extractDateAndTime } from "../../utils";
+import { Status, DateAndTime } from "./Table.styled";
 
 const columns = [
-  { id: "date", label: "Date", minWidth: 100 },
+  {
+    id: "date",
+    label: "Date",
+    minWidth: 100,
+    format: (value) => {
+      const { date, time } = extractDateAndTime(value);
+      return (
+        <>
+          <DateAndTime>{date}</DateAndTime>
+          <DateAndTime time="true">{time}</DateAndTime>
+        </>
+      );
+    },
+  },
   { id: "transactionID", label: "Transaction\u00a0ID", minWidth: 120 },
   {
     id: "accountNo",
     label: "Account\u00a0No.",
     minWidth: 120,
-    format: (value) => value.toLocaleString("en-US"),
   },
   {
     id: "status",
     label: "Status",
     minWidth: 120,
-    format: (value) => value.toLocaleString("en-US"),
   },
   {
     id: "description",
     label: "Description",
     minWidth: 170,
-    format: (value) => value.toFixed(2),
   },
 ];
 
-function createData(date, transactionID, accountNo, status) {
-  const description = accountNo / status;
+function createData(date, transactionID, accountNo, status, description) {
+  status = (
+    <Status
+      type={
+        status === "completed"
+          ? "success"
+          : description === "Insufficient user funds"
+          ? "user-error"
+          : "system-error"
+      }
+    >
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </Status>
+  );
   return { date, transactionID, accountNo, status, description };
 }
 
 const rows = [
-  createData("India", "IN", 1324171354, 3287263),
-  createData("China", "CN", 1403500365, 9596961),
-  createData("Italy", "IT", 60483973, 301340),
-  createData("United States", "US", 327167434, 9833520),
-  createData("Canada", "CA", 37602103, 9984670),
-  createData("Australia", "AU", 25475400, 7692024),
-  createData("Germany", "DE", 83019200, 357578),
-  createData("Ireland", "IE", 4857000, 70273),
-  createData("Mexico", "MX", 126577691, 1972550),
-  createData("Japan", "JP", 126317000, 377973),
-  createData("France", "FR", 67022000, 640679),
-  createData("United Kingdom", "GB", 67545757, 242495),
-  createData("Russia", "RU", 146793744, 17098246),
-  createData("Nigeria", "NG", 200962417, 923768),
-  createData("Brazil", "BR", 210147125, 8515767),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100014",
+    120000000000,
+    "failed",
+    "Insufficient user funds"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100013",
+    120000000004,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100012",
+    120000000006,
+    "failed",
+    "Insufficient ATM funds"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100011",
+    120000000003,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100010",
+    120000000007,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100009",
+    120000000008,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100008",
+    120000000001,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100007",
+    120000000023,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100006",
+    120000000435,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100005",
+    120000004543,
+    "failed",
+    "Connection disconnected"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100004",
+    120000000345,
+    "failed",
+    "Internal server error"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100003",
+    120000034552,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100002",
+    120000453444,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100001",
+    120000345452,
+    "completed",
+    "Operation successful"
+  ),
+  createData(
+    "2023-06-14T06:19:36.163+00:00",
+    "100000",
+    120000000034,
+    "completed",
+    "Operation successful"
+  ),
 ];
 
 export default function StickyHeadTable() {
@@ -72,6 +186,9 @@ export default function StickyHeadTable() {
       sx={{
         width: "95%",
         margin: "0 auto",
+        td: {
+          color: "black",
+        },
         overflow: "hidden",
         "th:first-of-type, td:first-of-type": {
           paddingLeft: "50px !important",
@@ -113,9 +230,7 @@ export default function StickyHeadTable() {
                       const value = row[column.id];
                       return (
                         <TableCell key={column.id} align={column.align}>
-                          {column.format && typeof value === "number"
-                            ? column.format(value)
-                            : value}
+                          {column.format ? column.format(value) : value}
                         </TableCell>
                       );
                     })}
