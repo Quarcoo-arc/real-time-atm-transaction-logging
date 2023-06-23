@@ -16,6 +16,15 @@ let ATM_BALANCE = 20000.0;
 let ACTIVE_STAFF_NAME = "Michael Quarcoo";
 let ACTIVE_STAFF_EMAIL = "michaelquarcoo04@gmail.com";
 
+const updateActiveUserDetails = (name, email) => {
+  ACTIVE_STAFF_NAME = name;
+  ACTIVE_STAFF_EMAIL = email;
+};
+
+const updateAtmBalance = (newBal) => {
+  ATM_BALANCE = newBal;
+};
+
 module.exports = {
   NO_ERROR,
   TRANSACTION_TIMEOUT,
@@ -24,6 +33,8 @@ module.exports = {
   ERROR,
   ERRORS,
   ATM_BALANCE,
-  ACTIVE_STAFF_NAME,
-  ACTIVE_STAFF_EMAIL,
+  getActiveStaffName: () => ACTIVE_STAFF_NAME,
+  getActiveStaffEmail: () => ACTIVE_STAFF_EMAIL,
+  updateAtmBalance,
+  updateActiveUserDetails,
 };

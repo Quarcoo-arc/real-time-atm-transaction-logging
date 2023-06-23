@@ -7,12 +7,14 @@ const LocalStrategy = require("passport-local");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const express = require("express");
+const validator = require("email-validator");
 const {
   ERROR,
   ERRORS,
   ATM_BALANCE,
-  ACTIVE_STAFF_EMAIL,
-  ACTIVE_STAFF_NAME,
+  getActiveStaffEmail,
+  getActiveStaffName,
+  updateActiveUserDetails,
 } = require("./constants.js");
 
 require("dotenv").config();
@@ -345,10 +347,42 @@ app.get("/active-staff", (req, res) => {
   try {
     res.json({
       success: true,
-      data: { name: ACTIVE_STAFF_NAME, email: ACTIVE_STAFF_EMAIL },
+      data: { name: getActiveStaffName(), email: getActiveStaffEmail() },
     });
   } catch (error) {
     res.json({ success: false, error: error.stack });
+  }
+});
+
+app.post("/active-staff", (req, res) => {
+  try {
+    const name = req.body.name;
+    const email = req.body.email;
+
+    if (!name || !email) {
+      res.status(400);
+      return res.json({ success: false, message: "Invalid request body" });
+    }
+
+    if (!validator.validate(email)) {
+      res.status(400);
+      return res.json({ success: false, message: "Invalid email address" });
+    }
+
+    updateActiveUserDetails(name, email);
+    const [newName, newEmail] = [getActiveStaffName(), getActiveStaffEmail()];
+
+    res.json({
+      success: true,
+      data: { name: newName, email: newEmail },
+      message: "Successfully updated active staff details",
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "Failed to update active staff details",
+      error: error.stack,
+    });
   }
 });
 
