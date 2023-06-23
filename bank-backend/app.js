@@ -330,6 +330,10 @@ app.post("/change-pin", ensureLoggedIn, checkPIN, async (req, res) => {
   }
 });
 
+app.post("/verify-pin", ensureLoggedIn, checkPIN, (req, res) => {
+  res.json({ success: true, message: "PIN verified" });
+});
+
 /**
  * API Endpoints
  *
