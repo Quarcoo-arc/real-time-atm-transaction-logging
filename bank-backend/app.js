@@ -7,6 +7,13 @@ const LocalStrategy = require("passport-local");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const express = require("express");
+const {
+  ERROR,
+  ERRORS,
+  ATM_BALANCE,
+  ACTIVE_STAFF_EMAIL,
+  ACTIVE_STAFF_NAME,
+} = require("./constants.js");
 
 require("dotenv").config();
 
@@ -334,32 +341,16 @@ app.post("/verify-pin", ensureLoggedIn, checkPIN, (req, res) => {
   res.json({ success: true, message: "PIN verified" });
 });
 
-/**
- * API Endpoints
- *
- * /register
- * payload - {email, password, name}
- * - create user account (a unique ID is returned upon account creation)
- * - create new data entry in database using the unique ID, name and default amount of GHC 0
- *
- * /login
- * payload - {email, password}
- * - make api call to firebase sign-in-with-email-and-password
- *
- * /deposit
- * payload - {amount}
- *
- * /withdraw
- * payload - {amount}
- *
- * /account-balance
- *
- * /account-info
- *
- * /pin-change
- * payload - {old_PIN, newPIN}
- *
- */
+app.get("/active-staff", (req, res) => {
+  try {
+    res.json({
+      success: true,
+      data: { name: ACTIVE_STAFF_NAME, email: ACTIVE_STAFF_EMAIL },
+    });
+  } catch (error) {
+    res.json({ success: false, error: error.stack });
+  }
+});
 
 app.use((req, res, next) => next(createError(401)));
 

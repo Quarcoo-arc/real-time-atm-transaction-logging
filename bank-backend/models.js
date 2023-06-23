@@ -99,7 +99,6 @@ transactionSchema.plugin(autoInc, {
 
 const Transaction = model("Transaction", transactionSchema);
 
-// TODO: Create document to store static content (errors, etc)
 // Update withdrawal method to check for errors and act accordingly - could be implemented as a middleware
 
 module.exports = { User, Transaction, db };
