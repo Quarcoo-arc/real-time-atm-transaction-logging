@@ -10,7 +10,6 @@ const express = require("express");
 const validator = require("email-validator");
 const {
   ERRORS,
-  ATM_BALANCE,
   getActiveStaffEmail,
   getActiveStaffName,
   updateActiveUserDetails,
@@ -466,13 +465,6 @@ app.post("/atm-balance", (req, res) => {
     res.json({ success: false, error: error.stack });
   }
 });
-
-/**
- * TODO:
- *
- * - Update atm balance after deposit and withdrawal
- * -
- */
 
 app.use((req, res, next) => next(createError(401)));
 
