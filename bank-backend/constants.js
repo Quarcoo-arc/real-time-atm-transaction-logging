@@ -22,7 +22,7 @@ const updateActiveUserDetails = (name, email) => {
 };
 
 const updateAtmBalance = (newBal) => {
-  ATM_BALANCE = newBal;
+  ATM_BALANCE = +newBal.toFixed(2);
 };
 
 module.exports = {
@@ -35,7 +35,7 @@ module.exports = {
     ERROR = val;
   },
   ERRORS,
-  ATM_BALANCE,
+  getAtmBalance: () => +ATM_BALANCE.toFixed(),
   getActiveStaffName: () => ACTIVE_STAFF_NAME,
   getActiveStaffEmail: () => ACTIVE_STAFF_EMAIL,
   updateAtmBalance,

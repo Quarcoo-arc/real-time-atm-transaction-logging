@@ -16,6 +16,8 @@ const {
   updateActiveUserDetails,
   getCurrentError,
   updateCurrentError,
+  getAtmBalance,
+  updateAtmBalance,
 } = require("./constants.js");
 
 require("dotenv").config();
@@ -172,6 +174,8 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
     user.accountBalance = +user.accountBalance + +req.body.amount;
     const result = await user.save();
 
+    updateAtmBalance(getAtmBalance() + +req.body.amount);
+
     const transaction = new Transaction({
       accountNumber: user.accountNumber,
       type: "deposit",
@@ -231,8 +235,26 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
         error: "Insufficient Funds",
       });
     }
+    if (+req.body.amount > getAtmBalance()) {
+      const transaction = new Transaction({
+        accountNumber: user.accountNumber,
+        type: "withdrawal",
+        amount: req.body.amount,
+        status: "failed",
+        description: "Insufficient ATM Funds",
+      });
+      await transaction.save();
+
+      res.status(500);
+      return res.json({
+        success: false,
+        error: "Insufficient ATM Funds",
+      });
+    }
     user.accountBalance = +user.accountBalance - +req.body.amount;
     const result = await user.save();
+
+    updateAtmBalance(getAtmBalance() - +req.body.amount);
 
     const transaction = new Transaction({
       accountNumber: user.accountNumber,
@@ -416,10 +438,38 @@ app.post("/current-error", (req, res) => {
   }
 });
 
+app.get("/atm-balance", (req, res) => {
+  try {
+    res.json({ success: true, data: { atmBalance: getAtmBalance() } });
+  } catch (error) {
+    res.json({ success: false, error: error.stack });
+  }
+});
+
+app.post("/atm-balance", (req, res) => {
+  try {
+    if (!req.body?.amount || isNaN(req.body.amount) || +req.body.amount < 0) {
+      res.status(400);
+      return res.json({
+        success: false,
+        error: "Invalid request body!",
+      });
+    }
+    updateAtmBalance(getAtmBalance() + +req.body.amount);
+    return res.json({
+      success: true,
+      data: {
+        atmBalance: getAtmBalance(),
+      },
+    });
+  } catch (error) {
+    res.json({ success: false, error: error.stack });
+  }
+});
+
 /**
  * TODO:
  *
- * - Update error endpoint
  * - Update atm balance after deposit and withdrawal
  * -
  */
