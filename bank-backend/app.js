@@ -18,6 +18,7 @@ const {
   updateCurrentError,
   getAtmBalance,
   updateAtmBalance,
+  NO_ERROR,
 } = require("./constants.js");
 
 require("dotenv").config();
@@ -172,6 +173,28 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
     }
 
     const user = await User.findById(req.user.id);
+    if (getCurrentError() !== NO_ERROR && ERRORS[getCurrentError()]) {
+      const err = getCurrentError()
+        .split("_")
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ");
+      const transaction = new Transaction({
+        accountNumber: user.accountNumber,
+        type: "withdrawal",
+        amount: req.body.amount,
+        status: "failed",
+        description: err,
+      });
+      await transaction.save();
+
+      res.status(500);
+      return res.json({
+        success: false,
+        error: err,
+      });
+    }
     user.accountBalance = +user.accountBalance + +req.body.amount;
     const result = await user.save();
 
@@ -250,6 +273,28 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
       return res.json({
         success: false,
         error: "Insufficient ATM Funds",
+      });
+    }
+    if (getCurrentError() !== NO_ERROR && ERRORS[getCurrentError()]) {
+      const err = getCurrentError()
+        .split("_")
+        .map(
+          (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+        )
+        .join(" ");
+      const transaction = new Transaction({
+        accountNumber: user.accountNumber,
+        type: "withdrawal",
+        amount: req.body.amount,
+        status: "failed",
+        description: err,
+      });
+      await transaction.save();
+
+      res.status(500);
+      return res.json({
+        success: false,
+        error: err,
       });
     }
     user.accountBalance = +user.accountBalance - +req.body.amount;
