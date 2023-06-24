@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
 const express = require("express");
 const validator = require("email-validator");
+const cors = require("cors");
 const {
   ERRORS,
   getActiveStaffEmail,
@@ -31,6 +32,7 @@ const port = 5000;
 
 const SESSOIN_COOKIE_MAX_AGE_IN_MS = 5 * 60 * 1000; // 5 minutes
 
+app.use(cors());
 app.use(bodyParser.json());
 
 passport.serializeUser((user, cb) => cb(null, user));

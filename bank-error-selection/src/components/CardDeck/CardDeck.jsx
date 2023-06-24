@@ -11,28 +11,55 @@ const CardDeck = () => {
     "Internal Server Error",
     "Connection Disconnected",
   ];
+
+  const errorsMap = {
+    NO_ERROR: cardsContentArr[0],
+    TRANSACTION_TIMEOUT: cardsContentArr[1],
+    INTERNAL_SERVER_ERROR: cardsContentArr[2],
+    CONNECTION_DISCONNECTED: cardsContentArr[3],
+  };
+
+  const errorsMapReverse = {
+    [cardsContentArr[0]]: "NO_ERROR",
+    [cardsContentArr[1]]: "TRANSACTION_TIMEOUT",
+    [cardsContentArr[2]]: "INTERNAL_SERVER_ERROR",
+    [cardsContentArr[3]]: "CONNECTION_DISCONNECTED",
+  };
   const [selectedCard, setSelectedCard] = useState(cardsContentArr[0]); // TODO: Move this into a context
 
   useEffect(() => {
     const getCurrentError = async () => {
-      const currentError = await fetch(`${base_url}/current-error`);
+      const fetchError = await fetch(`${base_url}/current-error`);
+      const result = await fetchError.json();
 
-      setSelectedCard(
-        currentError
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ")
-      );
-      console.log(
-        currentError
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ")
-      );
+      let currentError = cardsContentArr[0];
+      if (result.success && errorsMap[result.data.error]) {
+        currentError = errorsMap[result.data.error];
+      }
+      setSelectedCard(currentError);
     };
 
     getCurrentError();
   }, []);
+
+  const selectCard = async (e) => {
+    const err = e.target.textContent;
+
+    if (!errorsMapReverse[err]) return;
+    const result = await fetch(`${base_url}/current-error`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        error: errorsMapReverse[err],
+      }),
+    });
+    const data = await result.json();
+    if (data.success) {
+      setSelectedCard(errorsMap[data.data.currentError]);
+    }
+  };
 
   return (
     <CardsWrapper>
@@ -41,7 +68,7 @@ const CardDeck = () => {
           key={idx}
           content={card}
           selected={card === selectedCard}
-          onClick={() => setSelectedCard(card)}
+          onClick={selectCard}
         />
       ))}
     </CardsWrapper>
