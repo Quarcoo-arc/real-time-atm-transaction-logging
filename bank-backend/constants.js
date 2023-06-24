@@ -1,7 +1,7 @@
-const NO_ERROR = "no_error";
-const TRANSACTION_TIMEOUT = "transaction_timeout";
-const INTERNAL_SERVER_ERROR = "internal_server_error";
-const CONNECTION_DISCONNECTED = "connection_disconnected";
+const NO_ERROR = "NO_ERROR";
+const TRANSACTION_TIMEOUT = "TRANSACTION_TIMEOUT";
+const INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR";
+const CONNECTION_DISCONNECTED = "CONNECTION_DISCONNECTED";
 
 const ERRORS = {
   NO_ERROR,
@@ -30,7 +30,10 @@ module.exports = {
   TRANSACTION_TIMEOUT,
   INTERNAL_SERVER_ERROR,
   CONNECTION_DISCONNECTED,
-  ERROR,
+  getCurrentError: () => ERROR,
+  updateCurrentError: (val) => {
+    ERROR = val;
+  },
   ERRORS,
   ATM_BALANCE,
   getActiveStaffName: () => ACTIVE_STAFF_NAME,

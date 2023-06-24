@@ -9,12 +9,13 @@ const nodemailer = require("nodemailer");
 const express = require("express");
 const validator = require("email-validator");
 const {
-  ERROR,
   ERRORS,
   ATM_BALANCE,
   getActiveStaffEmail,
   getActiveStaffName,
   updateActiveUserDetails,
+  getCurrentError,
+  updateCurrentError,
 } = require("./constants.js");
 
 require("dotenv").config();
@@ -385,6 +386,43 @@ app.post("/active-staff", (req, res) => {
     });
   }
 });
+
+app.get("/current-error", (req, res) => {
+  try {
+    res.json({ success: true, data: { error: getCurrentError() } });
+  } catch (error) {
+    res.json({
+      success: false,
+      error: error.stack,
+      message: "Something went wrong",
+    });
+  }
+});
+
+app.post("/current-error", (req, res) => {
+  try {
+    if (!req.body?.error || !ERRORS[req.body.error]) {
+      res.status(400);
+      return res.json({ success: false, message: "Invalid request body" });
+    }
+    updateCurrentError(ERRORS[req.body.error]);
+    res.json({ success: true, data: { currentError: getCurrentError() } });
+  } catch (error) {
+    return res.json({
+      success: false,
+      error: error.stack,
+      message: "Something went wrong",
+    });
+  }
+});
+
+/**
+ * TODO:
+ *
+ * - Update error endpoint
+ * - Update atm balance after deposit and withdrawal
+ * -
+ */
 
 app.use((req, res, next) => next(createError(401)));
 
