@@ -7,4 +7,15 @@ const Heading = styled.h3`
   font-weight: 700;
 `;
 
-export { Heading };
+const StaffName = styled.h4`
+  margin: 0;
+  font-size: 1.875rem;
+`;
+
+const StaffEmail = styled.h5`
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 600;
+`;
+
+export { Heading, StaffEmail, StaffName };
