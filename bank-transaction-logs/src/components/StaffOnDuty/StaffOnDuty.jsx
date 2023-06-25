@@ -9,7 +9,13 @@ import IconButton from "@mui/material/IconButton";
 import CloseIcon from "@mui/icons-material/CloseRounded";
 import SyncIcon from "@mui/icons-material/SyncRounded";
 import Typography from "@mui/material/Typography";
-import { Heading } from "./StaffOnDuty.styled";
+import {
+  Heading,
+  StaffBtnWrapper,
+  StaffEmail,
+  StaffInfoWrapper,
+  StaffName,
+} from "./StaffOnDuty.styled";
 import { useState } from "react";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -60,11 +66,19 @@ const StaffOnDuty = () => {
   return (
     <div>
       <Heading>Staff On Duty</Heading>
-      <Button variant="outlined" onClick={handleClickOpen}>
-        Open dialog
-        <IconButton aria-label="change">
-          <SyncIcon />
-        </IconButton>
+      <Button
+        style={{ backgroundColor: "white", borderRadius: 15 }}
+        variant="outlined"
+        onClick={handleClickOpen}
+      >
+        <StaffBtnWrapper>
+          <StaffInfoWrapper>
+            <StaffName>{staffName}</StaffName>
+            <StaffEmail>{staffEmail}</StaffEmail>
+          </StaffInfoWrapper>
+
+          <SyncIcon style={{ padding: "0 1rem 0 0.8rem", maxWidth: "95%" }} />
+        </StaffBtnWrapper>
       </Button>
       <BootstrapDialog
         onClose={handleClose}
