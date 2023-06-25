@@ -5,6 +5,7 @@ import {
   CardsList,
   SearchBar,
   Table,
+  StaffOnDuty,
 } from "./components";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <Logo />
       <Heading />
       <CardsList />
+      <StaffOnDuty />
       <SearchBar />
       <Table />
     </>
