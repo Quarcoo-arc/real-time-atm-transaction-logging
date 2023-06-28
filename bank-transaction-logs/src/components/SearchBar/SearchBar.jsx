@@ -13,16 +13,20 @@ const SearchBar = () => {
       sx={{
         p: "20px",
         width: 360,
+        height: "8rem",
         borderRadius: 50,
         display: "flex",
         background: "none",
         boxShadow: "none",
         border: "1px solid #FFFFFF",
         boxSizing: "border-box",
-        marginBottom: "1rem",
         "@media screen and (max-width: 768px)": {
           p: "10px 15px",
           width: 300,
+          height: "6rem",
+        },
+        "@media screen and (max-width: 425px)": {
+          height: "5rem",
         },
       }}
     >

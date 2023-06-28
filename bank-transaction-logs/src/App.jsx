@@ -7,6 +7,7 @@ import {
   Table,
   StaffOnDuty,
 } from "./components";
+import { StaffBtnAndSearchWrapper } from "./App.styled";
 
 function App() {
   return (
@@ -15,8 +16,10 @@ function App() {
       <Logo />
       <Heading />
       <CardsList />
-      <StaffOnDuty />
-      <SearchBar />
+      <StaffBtnAndSearchWrapper>
+        <StaffOnDuty />
+        <SearchBar />
+      </StaffBtnAndSearchWrapper>
       <Table />
     </>
   );
