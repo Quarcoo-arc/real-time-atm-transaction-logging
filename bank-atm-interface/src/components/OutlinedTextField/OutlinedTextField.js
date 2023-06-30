@@ -70,7 +70,6 @@ const OutlinedTextField = ({
         value={value}
         error={error}
         helperText={helperText}
-        variant="outlined"
         endAdornment={
           <InputAdornment position="end">
             <IconButton
