@@ -15,6 +15,19 @@ const Btn = styled.button`
   &:hover {
     box-shadow: 2px 3px 1px rgba(0, 0, 0, 0.2);
   }
+  position: absolute;
+  top: 1.2rem;
+  right: 2rem;
+  @media screen and (max-width: 768px) {
+    right: 1rem;
+    font-size: 1.6rem;
+    top: 1rem;
+  }
+  @media screen and (max-width: 426px) {
+    font-size: 1.2rem;
+    padding: 0.6rem 1rem;
+    top: 1.2rem;
+  }
 `;
 
 export { Btn };
