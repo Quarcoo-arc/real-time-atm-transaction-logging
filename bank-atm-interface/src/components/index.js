@@ -3,5 +3,6 @@ import AuthButton from "./AuthButton/AuthButton";
 import SideImage from "./SideImage/SideImage";
 import OutlinedTextField from "./OutlinedTextField/OutlinedTextField";
 import Heading from "./Heading/Heading";
+import FormButton from "./FormButton/FormButton";
 
-export { Logo, AuthButton, SideImage, OutlinedTextField, Heading };
+export { Logo, AuthButton, SideImage, OutlinedTextField, Heading, FormButton };

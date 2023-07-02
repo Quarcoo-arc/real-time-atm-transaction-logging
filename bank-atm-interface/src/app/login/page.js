@@ -2,12 +2,11 @@
 import React from "react";
 import { AuthPage } from "@/sharedPages";
 import loginImg from "../../../public/login_img.jpg";
-import { Heading, OutlinedTextField } from "@/components";
+import { FormButton, Heading, OutlinedTextField } from "@/components";
 import Box from "@mui/material/Box";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import Link from "next/link";
-import Button from "@mui/material/Button";
 import { ContentWrapper, WrapAndCenter, Wrapper } from "./page.styled";
 
 const Login = () => {
@@ -76,30 +75,7 @@ const Login = () => {
             <Link href="#">Forgot Password?</Link>
           </Wrapper>
           <WrapAndCenter>
-            <Button
-              type="submit"
-              sx={{
-                borderRadius: "1.25rem",
-                background: "#FFF",
-                color: "#000",
-                fontWeight: 600,
-                fontSize: "1.8rem",
-                padding: "0.4rem 1rem",
-                fontFamily: "Poppins",
-                textTransform: "capitalize",
-                "&:hover": {
-                  border: "none",
-                  background: "none",
-                  color: "white",
-                  outline: "2px solid white",
-                  outlineOffset: "1px",
-                  boxSizing: "border-box",
-                },
-              }}
-              variant="contained"
-            >
-              Sign In
-            </Button>
+            <FormButton type="submit">Sign In</FormButton>
             <Link href="/register">
               Don’t have an account? <span>Sign Up</span>
             </Link>
