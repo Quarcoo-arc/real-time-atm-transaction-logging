@@ -4,7 +4,8 @@ import Image from "next/image";
 
 const ImageEl = styled(Image)`
   width: 50vw;
-  height: 100vh;
+  min-height: 100vh;
+  height: 100%;
   object-fit: cover;
   @media screen and (max-width: 768px) {
     display: none;

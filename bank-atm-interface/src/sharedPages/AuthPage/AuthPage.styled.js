@@ -14,7 +14,7 @@ const ContentWrapper = styled.div`
   margin-top: 10rem;
   align-items: center;
   @media screen and (max-width: 768px) {
-    margin-top: 9rem;
+    margin-top: 8rem;
     width: 100%;
   }
 `;
