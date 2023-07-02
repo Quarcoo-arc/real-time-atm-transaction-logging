@@ -1,7 +1,7 @@
 "use client";
 import styled from "@emotion/styled";
 
-const LogoText = styled.h1`
+const LogoText = styled.a`
   font-family: var(--font-dancing-script);
   font-size: 75px;
   line-height: 96px;
@@ -10,6 +10,7 @@ const LogoText = styled.h1`
   top: 1rem;
   left: 2rem;
   margin: 0;
+  cursor: pointer;
   @media screen and (max-width: 768px) {
     font-size: 60px;
     line-height: 60px;

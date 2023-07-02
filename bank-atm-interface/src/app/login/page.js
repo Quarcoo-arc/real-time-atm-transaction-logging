@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { AuthPage } from "@/sharedPages";
-import registerImg from "../../../public/register_img.jpg";
+import loginImg from "../../../public/login_img.jpg";
 import { Heading, OutlinedTextField } from "@/components";
 import Box from "@mui/material/Box";
 import * as yup from "yup";
@@ -10,7 +10,7 @@ import Link from "next/link";
 import Button from "@mui/material/Button";
 import { ContentWrapper, WrapAndCenter, Wrapper } from "./page.styled";
 
-const SignUp = () => {
+const Login = () => {
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")
@@ -34,7 +34,7 @@ const SignUp = () => {
   });
 
   return (
-    <AuthPage btnType="Sign Up" src={registerImg}>
+    <AuthPage btnType="Sign Up" src={loginImg}>
       <ContentWrapper>
         <div>
           <Heading>Welcome to Bank!</Heading>
@@ -100,7 +100,7 @@ const SignUp = () => {
             >
               Sign In
             </Button>
-            <Link href="#">
+            <Link href="/register">
               Don’t have an account? <span>Sign Up</span>
             </Link>
           </WrapAndCenter>
@@ -110,4 +110,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default Login;
