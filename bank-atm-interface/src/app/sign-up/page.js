@@ -2,7 +2,7 @@
 import React from "react";
 import { AuthPage } from "@/sharedPages";
 import registerImg from "../../../public/register_img.jpg";
-import { OutlinedTextField } from "@/components";
+import { Heading, OutlinedTextField } from "@/components";
 import Box from "@mui/material/Box";
 import * as yup from "yup";
 import { useFormik } from "formik";
@@ -37,8 +37,8 @@ const SignUp = () => {
     <AuthPage btnType="Sign Up" src={registerImg}>
       <ContentWrapper>
         <div>
-          <h1>Welcome to Bank!</h1>
-          <h2>Sign In to continue</h2>
+          <Heading>Welcome to Bank!</Heading>
+          <Heading type="sub">Sign In to continue</Heading>
         </div>
         <Box
           component="form"
@@ -77,6 +77,7 @@ const SignUp = () => {
           </Wrapper>
           <WrapAndCenter>
             <Button
+              type="submit"
               sx={{
                 borderRadius: "1.25rem",
                 background: "#FFF",
