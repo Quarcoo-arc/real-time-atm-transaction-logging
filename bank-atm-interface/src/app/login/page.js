@@ -7,7 +7,8 @@ import Box from "@mui/material/Box";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import Link from "next/link";
-import { ContentWrapper, WrapAndCenter, Wrapper } from "./page.styled";
+import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
+import { Wrapper } from "./page.styled";
 
 const Login = () => {
   const validationSchema = yup.object({
