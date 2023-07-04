@@ -19,6 +19,9 @@ const SignUp = () => {
       .string("Enter your password")
       .min(6, "Password should be of minimum 6 characters length")
       .required("Password is required"),
+    confirm_password: yup
+      .string()
+      .oneOf([yup.ref("password"), null], "Passwords must match"),
   });
 
   const formik = useFormik({
@@ -69,6 +72,19 @@ const SignUp = () => {
             onChange={formik.handleChange}
             error={formik.touched.password && Boolean(formik.errors.password)}
             helperText={formik.touched.password && formik.errors.password}
+          />
+          <OutlinedTextField
+            label="Confirm Password"
+            type="confirm_password"
+            value={formik.values.confirm_password}
+            onChange={formik.handleChange}
+            error={
+              formik.touched.confirm_password &&
+              Boolean(formik.errors.confirm_password)
+            }
+            helperText={
+              formik.touched.confirm_password && formik.errors.confirm_password
+            }
           />
           <WrapAndCenter>
             <FormButton type="submit">Next</FormButton>

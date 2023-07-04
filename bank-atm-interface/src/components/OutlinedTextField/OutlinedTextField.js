@@ -8,6 +8,7 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { FormHelperText } from "@mui/material";
 
 const OutlinedTextField = ({
   onChange,
@@ -24,9 +25,10 @@ const OutlinedTextField = ({
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  return type === "password" ? (
+  return type === "password" || type === "confirm_password" ? (
     <FormControl
       fullWidth
+      error={error}
       sx={{
         "& .MuiInputBase-input": {
           fontSize: "1.5rem",
@@ -60,9 +62,11 @@ const OutlinedTextField = ({
       }}
       variant="outlined"
     >
-      <InputLabel htmlFor="standard-adornment-password">Password</InputLabel>
+      <InputLabel htmlFor="standard-adornment-password">
+        {type === "confirm_password" ? "Confirm Password" : "Password"}
+      </InputLabel>
       <OutlinedInput
-        id="standard-adornment-password"
+        id={type}
         type={showPassword ? "text" : "password"}
         onChange={onChange}
         label={label}
@@ -70,6 +74,7 @@ const OutlinedTextField = ({
         value={value}
         error={error}
         helperText={helperText}
+        aria-describedby={`${type}-text`}
         endAdornment={
           <InputAdornment position="end">
             <IconButton
@@ -82,6 +87,7 @@ const OutlinedTextField = ({
           </InputAdornment>
         }
       />
+      <FormHelperText id={`${type}-text`}>{helperText}</FormHelperText>
     </FormControl>
   ) : (
     <TextField
