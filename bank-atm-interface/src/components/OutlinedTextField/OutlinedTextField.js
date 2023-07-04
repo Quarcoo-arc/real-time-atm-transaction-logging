@@ -25,7 +25,18 @@ const OutlinedTextField = ({
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-  return type === "password" || type === "confirm_password" ? (
+  const typeLabelMap = {
+    password: "Password",
+    confirm_password: "Confirm Password",
+    atm_pin: "ATM PIN",
+    confirm_atm_pin: "Confirm ATM PIN",
+  };
+  return new Set([
+    "password",
+    "confirm_password",
+    "atm_pin",
+    "confirm_atm_pin",
+  ]).has(type) ? (
     <FormControl
       fullWidth
       error={error}
@@ -62,9 +73,7 @@ const OutlinedTextField = ({
       }}
       variant="outlined"
     >
-      <InputLabel htmlFor="standard-adornment-password">
-        {type === "confirm_password" ? "Confirm Password" : "Password"}
-      </InputLabel>
+      <InputLabel htmlFor={type}>{typeLabelMap[type]}</InputLabel>
       <OutlinedInput
         id={type}
         type={showPassword ? "text" : "password"}
