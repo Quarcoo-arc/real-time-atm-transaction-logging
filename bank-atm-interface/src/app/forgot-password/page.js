@@ -1,31 +1,25 @@
 "use client";
 import React from "react";
 import { AuthPage } from "@/sharedPages";
-import loginImg from "../../../public/login_img.jpg";
+import forgotPasswordImg from "../../../public/forgot_password_img.jpg";
 import { FormButton, Heading, OutlinedTextField } from "@/components";
 import Box from "@mui/material/Box";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
-import { Wrapper } from "./page.styled";
 
-const Login = () => {
+const ForgotPassword = () => {
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")
       .email("Enter a valid email")
       .required("Email is required"),
-    password: yup
-      .string("Enter your password")
-      .min(6, "Password should be of minimum 6 characters length")
-      .required("Password is required"),
   });
 
   const formik = useFormik({
     initialValues: {
       email: "",
-      password: "",
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -34,11 +28,11 @@ const Login = () => {
   });
 
   return (
-    <AuthPage btnType="Sign Up" src={loginImg}>
+    <AuthPage btnType="Sign Up" src={forgotPasswordImg}>
       <ContentWrapper>
         <div>
-          <Heading>Welcome to Bank!</Heading>
-          <Heading type="sub">Sign In to continue</Heading>
+          <Heading>Forgot Password</Heading>
+          <Heading type="sub">Regain account access</Heading>
         </div>
         <Box
           component="form"
@@ -64,21 +58,10 @@ const Login = () => {
             helperText={formik.touched.email && formik.errors.email}
             onChange={formik.handleChange}
           />
-          <Wrapper>
-            <OutlinedTextField
-              label="Password"
-              type="password"
-              value={formik.values.password}
-              onChange={formik.handleChange}
-              error={formik.touched.password && Boolean(formik.errors.password)}
-              helperText={formik.touched.password && formik.errors.password}
-            />
-            <Link href="/forgot-password">Forgot Password?</Link>
-          </Wrapper>
           <WrapAndCenter>
-            <FormButton type="submit">Sign In</FormButton>
+            <FormButton type="submit">Send</FormButton>
             <Link href="/register">
-              Don’t have an account? <span>Sign Up</span>
+              Back to <span>Sign In</span>
             </Link>
           </WrapAndCenter>
         </Box>
@@ -87,4 +70,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default ForgotPassword;
