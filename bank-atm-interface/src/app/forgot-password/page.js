@@ -14,6 +14,7 @@ import { useFormik } from "formik";
 import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { ChevronLeftRounded } from "@mui/icons-material";
+import { BackLink } from "./page.styled";
 
 const ForgotPassword = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
@@ -78,10 +79,13 @@ const ForgotPassword = () => {
         open={openDialogue}
         setOpen={setOpenDialogue}
         heading="Email sent"
-        body="Check your email for a link to reset your password"
+        body="Check your email for a link to reset your password" //TODO: Change dialogue box content on error
         footer={
           <>
-            <ChevronLeftRounded /> Back to Sign In
+            <BackLink href="/login">
+              <ChevronLeftRounded /> Back to Sign In
+            </BackLink>
+            {/* Todo: Add retry button for the case of an error */}
           </>
         }
       />
