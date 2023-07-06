@@ -5,6 +5,7 @@ import OutlinedTextField from "./OutlinedTextField/OutlinedTextField";
 import Heading from "./Heading/Heading";
 import FormButton from "./FormButton/FormButton";
 import DialogueBox from "./DialogueBox/DialogueBox";
+import UserIcon from "./UserIcon/UserIcon";
 
 export {
   Logo,
@@ -14,4 +15,5 @@ export {
   Heading,
   FormButton,
   DialogueBox,
+  UserIcon,
 };
