@@ -1,15 +1,22 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { AuthPage } from "@/sharedPages";
 import forgotPasswordImg from "../../../public/forgot_password_img.jpg";
-import { FormButton, Heading, OutlinedTextField } from "@/components";
+import {
+  DialogueBox,
+  FormButton,
+  Heading,
+  OutlinedTextField,
+} from "@/components";
 import Box from "@mui/material/Box";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
+import { ChevronLeftRounded } from "@mui/icons-material";
 
 const ForgotPassword = () => {
+  const [openDialogue, setOpenDialogue] = useState(false);
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")
@@ -24,6 +31,7 @@ const ForgotPassword = () => {
     validationSchema: validationSchema,
     onSubmit: (values) => {
       console.log(values);
+      setOpenDialogue(true);
     },
   });
 
@@ -66,6 +74,17 @@ const ForgotPassword = () => {
           </WrapAndCenter>
         </Box>
       </ContentWrapper>
+      <DialogueBox
+        open={openDialogue}
+        setOpen={setOpenDialogue}
+        heading="Email sent"
+        body="Check your email for a link to reset your password"
+        footer={
+          <>
+            <ChevronLeftRounded /> Back to Sign In
+          </>
+        }
+      />
     </AuthPage>
   );
 };

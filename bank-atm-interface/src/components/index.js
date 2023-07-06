@@ -4,5 +4,14 @@ import SideImage from "./SideImage/SideImage";
 import OutlinedTextField from "./OutlinedTextField/OutlinedTextField";
 import Heading from "./Heading/Heading";
 import FormButton from "./FormButton/FormButton";
+import DialogueBox from "./DialogueBox/DialogueBox";
 
-export { Logo, AuthButton, SideImage, OutlinedTextField, Heading, FormButton };
+export {
+  Logo,
+  AuthButton,
+  SideImage,
+  OutlinedTextField,
+  Heading,
+  FormButton,
+  DialogueBox,
+};
