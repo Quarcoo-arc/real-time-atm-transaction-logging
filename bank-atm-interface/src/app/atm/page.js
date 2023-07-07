@@ -3,11 +3,11 @@ import React from "react";
 import { Card, Heading } from "@/components";
 import { CardsWrapper, ContentWrapper } from "./page.styled";
 import { LogoutRounded } from "@mui/icons-material";
-import withdrawMoneyIcon from "../../../public/withdraw_money.svg?url";
-import accountBalanceIcon from "../../../public/account_balance.svg?url";
-import depositMoneyIcon from "../../../public/deposit_money.svg?url";
-import accountInfoIcon from "../../../public/account_info.svg?url";
-import changePINIcon from "../../../public/change_pin.svg?url";
+import withdrawMoneyIcon from "../../../public/withdraw_money.svg";
+import accountBalanceIcon from "../../../public/account_balance.svg";
+import depositMoneyIcon from "../../../public/deposit_money.svg";
+import accountInfoIcon from "../../../public/account_info.svg";
+import changePINIcon from "../../../public/change_pin.svg";
 import Image from "next/image";
 
 const cardsContentArr = [

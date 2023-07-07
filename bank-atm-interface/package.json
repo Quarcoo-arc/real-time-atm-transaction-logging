@@ -23,7 +23,6 @@
     "yup": "^1.2.0"
   },
   "devDependencies": {
-    "@svgr/webpack": "^8.0.1",
     "cross-env": "^7.0.3",
     "sass": "^1.63.2"
   }
