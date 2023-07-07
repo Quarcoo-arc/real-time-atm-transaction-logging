@@ -12,27 +12,36 @@ import Image from "next/image";
 
 const cardsContentArr = [
   {
-    img: <Image src={accountBalanceIcon} />,
+    img: <Image alt="Account Balance" src={accountBalanceIcon} />,
     description: "Account Balance",
   },
   {
-    img: <Image src={depositMoneyIcon} />,
+    img: <Image alt="Deposit Money" src={depositMoneyIcon} />,
     description: "Deposit Money",
   },
   {
-    img: <Image src={accountInfoIcon} />,
+    img: <Image alt="Account Info" src={accountInfoIcon} />,
     description: "Account Info",
   },
   {
-    img: <Image src={changePINIcon} />,
+    img: <Image alt="Change PIN" src={changePINIcon} />,
     description: "Change PIN",
   },
   {
-    img: <Image src={withdrawMoneyIcon} />,
+    img: <Image alt="Withdraw Money" src={withdrawMoneyIcon} />,
     description: "Withdraw Money",
   },
   {
-    img: <LogoutRounded sx={{ fontSize: "3rem" }} />,
+    img: (
+      <LogoutRounded
+        sx={{
+          fontSize: "3rem",
+          "@media screen and (max-width: 741px)": {
+            fontSize: "2rem",
+          },
+        }}
+      />
+    ),
     description: "Exit",
   },
 ];

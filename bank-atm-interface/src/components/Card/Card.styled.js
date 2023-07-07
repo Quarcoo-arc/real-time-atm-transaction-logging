@@ -14,9 +14,18 @@ const CardContainer = styled.div`
   width: 20rem;
   height: 10rem;
   color: black;
+  @media screen and (max-width: 741px) {
+    width: 15rem;
+    height: 7rem;
+    gap: 1rem;
+    border-radius: 0.8rem;
+  }
   img {
     width: 3rem !important;
     height: fit-content !important;
+    @media screen and (max-width: 741px) {
+      width: 2rem !important;
+    }
   }
   :hover {
     background: none;
@@ -37,6 +46,9 @@ const CardDescription = styled.h2`
   text-align: center;
   font-weight: 500;
   text-transform: capitalize;
+  @media screen and (max-width: 741px) {
+    font-size: 1rem;
+  }
 `;
 
 export { CardContainer, CardDescription };
