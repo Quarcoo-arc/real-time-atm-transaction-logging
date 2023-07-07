@@ -1,8 +1,8 @@
 import React from "react";
 import { Btn } from "./AuthButton.styled";
 
-const AuthButton = ({ children }) => {
-  return <Btn>{children}</Btn>;
+const AuthButton = ({ onClick, children }) => {
+  return <Btn onClick={onClick}>{children}</Btn>;
 };
 
 export default AuthButton;
