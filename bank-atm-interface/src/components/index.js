@@ -6,6 +6,7 @@ import Heading from "./Heading/Heading";
 import FormButton from "./FormButton/FormButton";
 import DialogueBox from "./DialogueBox/DialogueBox";
 import UserIcon from "./UserIcon/UserIcon";
+import Card from "./Card/Card";
 
 export {
   Logo,
@@ -16,4 +17,5 @@ export {
   FormButton,
   DialogueBox,
   UserIcon,
+  Card,
 };

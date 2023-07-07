@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "cross-env NODE_OPTIONS=\"--max_old_space_size=4096\" next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -23,6 +23,8 @@
     "yup": "^1.2.0"
   },
   "devDependencies": {
+    "@svgr/webpack": "^8.0.1",
+    "cross-env": "^7.0.3",
     "sass": "^1.63.2"
   }
 }

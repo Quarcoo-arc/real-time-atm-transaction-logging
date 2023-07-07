@@ -15,7 +15,7 @@ export default function Home() {
   const router = useRouter();
   return (
     <main>
-      <AuthButton onClick={() => router.push("/login")}>Sign In</AuthButton>
+      <AuthButton type="login" />
       <ContentWrapper>
         <TextWrapper>
           <UpperCaseText>
@@ -52,7 +52,7 @@ export default function Home() {
           </Button>
         </TextWrapper>
         <ImageWrapper>
-          <StyledImage src={susuBox} alt="" />
+          <susuBox />
         </ImageWrapper>
       </ContentWrapper>
     </main>

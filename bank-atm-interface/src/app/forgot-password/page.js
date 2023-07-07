@@ -37,7 +37,7 @@ const ForgotPassword = () => {
   });
 
   return (
-    <AuthPage btnType="Sign Up" src={forgotPasswordImg}>
+    <AuthPage btnType="register" src={forgotPasswordImg}>
       <ContentWrapper>
         <div>
           <Heading>Forgot Password</Heading>

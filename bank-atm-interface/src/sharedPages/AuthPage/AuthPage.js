@@ -6,7 +6,7 @@ const AuthPage = ({ src, btnType, children }) => {
   return (
     <div>
       {btnType ? (
-        <AuthButton>{btnType}</AuthButton>
+        <AuthButton type={btnType} />
       ) : (
         <UserIcon name="Michael Quarcoo" email="michaelquarcoo04@gmail.com" />
       )}

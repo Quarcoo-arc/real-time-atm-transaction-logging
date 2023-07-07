@@ -34,7 +34,7 @@ const Login = () => {
   });
 
   return (
-    <AuthPage btnType="Sign Up" src={loginImg}>
+    <AuthPage btnType="register" src={loginImg}>
       <ContentWrapper>
         <div>
           <Heading>Welcome to Bank!</Heading>

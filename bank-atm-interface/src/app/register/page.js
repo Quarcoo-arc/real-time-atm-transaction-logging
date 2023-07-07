@@ -77,7 +77,7 @@ const SignUp = () => {
     },
   });
   return (
-    <AuthPage btnType="Sign In" src={registerImg}>
+    <AuthPage btnType="login" src={registerImg}>
       <ContentWrapper>
         <div>
           <Heading>Welcome to Bank!</Heading>
