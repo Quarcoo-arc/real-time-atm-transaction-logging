@@ -5,14 +5,15 @@ import Image from "next/image";
 const ContentWrapper = styled.div`
   display: flex;
   flex-flow: row;
-  margin: 7rem auto 0;
+
+  margin: 10% auto 3rem;
   gap: 2rem;
   width: 95%;
   justify-content: center;
   align-items: center;
   @media screen and (max-width: 768px) {
+    margin-top: 7rem;
     flex-flow: row wrap-reverse;
-    margin-bottom: 3rem;
   }
   @media screen and (max-width: 425px) {
     gap: 3rem;

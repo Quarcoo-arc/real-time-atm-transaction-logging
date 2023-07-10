@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Card, Heading } from "@/components";
+import { Background, Card, Heading } from "@/components";
 import { CardsWrapper, ContentWrapper } from "./page.styled";
 import { LogoutRounded } from "@mui/icons-material";
 import withdrawMoneyIcon from "../../../public/withdraw_money.svg";
@@ -49,6 +49,7 @@ const cardsContentArr = [
 const ATMHome = () => {
   return (
     <ContentWrapper>
+      <Background />
       <Heading>Hi Michael!</Heading>
       <Heading type="sub">Please select a transaction</Heading>
       <CardsWrapper>

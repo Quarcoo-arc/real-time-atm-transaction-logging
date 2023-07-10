@@ -7,6 +7,7 @@ import FormButton from "./FormButton/FormButton";
 import DialogueBox from "./DialogueBox/DialogueBox";
 import UserIcon from "./UserIcon/UserIcon";
 import Card from "./Card/Card";
+import Background from "./Background/Background";
 
 export {
   Logo,
@@ -18,4 +19,5 @@ export {
   DialogueBox,
   UserIcon,
   Card,
+  Background,
 };

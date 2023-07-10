@@ -52,7 +52,7 @@ export default function Home() {
           </Button>
         </TextWrapper>
         <ImageWrapper>
-          <susuBox />
+          <StyledImage src={susuBox} alt="Saving" priority={true} />
         </ImageWrapper>
       </ContentWrapper>
     </main>
