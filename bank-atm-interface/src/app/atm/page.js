@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
-import { Background, Card, Heading } from "@/components";
+import React, { useState } from "react";
+import { Background, Card, ConfirmLogutPopUp, Heading } from "@/components";
 import { CardsWrapper, ContentWrapper } from "./page.styled";
 import { LogoutRounded } from "@mui/icons-material";
 import withdrawMoneyIcon from "../../../public/withdraw_money.svg";
@@ -9,27 +9,33 @@ import depositMoneyIcon from "../../../public/deposit_money.svg";
 import accountInfoIcon from "../../../public/account_info.svg";
 import changePINIcon from "../../../public/change_pin.svg";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const cardsContentArr = [
   {
     img: <Image alt="Account Balance" src={accountBalanceIcon} />,
     description: "Account Balance",
+    redirectUrl: "/",
   },
   {
     img: <Image alt="Deposit Money" src={depositMoneyIcon} />,
     description: "Deposit Money",
+    redirectUrl: "/",
   },
   {
     img: <Image alt="Account Info" src={accountInfoIcon} />,
     description: "Account Info",
+    redirectUrl: "/",
   },
   {
     img: <Image alt="Change PIN" src={changePINIcon} />,
     description: "Change PIN",
+    redirectUrl: "/",
   },
   {
     img: <Image alt="Withdraw Money" src={withdrawMoneyIcon} />,
     description: "Withdraw Money",
+    redirectUrl: "/",
   },
   {
     img: (
@@ -47,6 +53,8 @@ const cardsContentArr = [
 ];
 
 const ATMHome = () => {
+  const router = useRouter();
+  const [openDialogue, setOpenDialogue] = useState(false);
   return (
     <ContentWrapper>
       <Background />
@@ -54,9 +62,19 @@ const ATMHome = () => {
       <Heading type="sub">Please select a transaction</Heading>
       <CardsWrapper>
         {cardsContentArr.map((el, idx) => (
-          <Card key={idx} img={el.img} description={el.description} />
+          <Card
+            key={idx}
+            img={el.img}
+            description={el.description}
+            onClick={
+              el.redirectUrl
+                ? () => router.push(el.redirectUrl)
+                : () => setOpenDialogue(true)
+            }
+          />
         ))}
       </CardsWrapper>
+      <ConfirmLogutPopUp open={openDialogue} setOpen={setOpenDialogue} />
     </ContentWrapper>
   );
 };

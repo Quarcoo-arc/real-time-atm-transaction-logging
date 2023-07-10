@@ -8,6 +8,7 @@ import DialogueBox from "./DialogueBox/DialogueBox";
 import UserIcon from "./UserIcon/UserIcon";
 import Card from "./Card/Card";
 import Background from "./Background/Background";
+import ConfirmLogutPopUp from "./ConfirmLogoutPopUp/ConfirmLogutPopUp";
 
 export {
   Logo,
@@ -20,4 +21,5 @@ export {
   UserIcon,
   Card,
   Background,
+  ConfirmLogutPopUp,
 };

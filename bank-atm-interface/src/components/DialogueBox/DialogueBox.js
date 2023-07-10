@@ -25,6 +25,10 @@ const DialogueBox = ({ open, setOpen, heading, body, footer }) => {
       onClose={handleClose}
       aria-describedby="dialog-box-description"
       sx={{
+        ".MuiPaper-root": {
+          borderRadius: "0.6rem",
+          padding: "0 1rem",
+        },
         "& .MuiDialogContent-root, & .MuiDialogActions-root, & .MuiDialogTitle-root":
           {
             fontFamily: "Poppins",
