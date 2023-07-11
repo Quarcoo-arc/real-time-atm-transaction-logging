@@ -2,10 +2,12 @@
 import React from "react";
 import { BackNavigationWrapper } from "./BackNavigation.styled";
 import { ChevronLeft } from "@mui/icons-material";
+import { useRouter } from "next/navigation";
 
 const BackNavigation = () => {
+  const router = useRouter();
   return (
-    <BackNavigationWrapper>
+    <BackNavigationWrapper onClick={() => router.back()}>
       <ChevronLeft sx={{ fontSize: "1.2rem" }} />
       <h3>Back</h3>
     </BackNavigationWrapper>
