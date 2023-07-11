@@ -1,11 +1,11 @@
 import React from "react";
 import { MainHeading, SubHeading } from "./Heading.styled";
 
-const Heading = ({ type = "main", children }) => {
+const Heading = ({ type = "main", children, alignment }) => {
   return type === "main" ? (
-    <MainHeading>{children}</MainHeading>
+    <MainHeading alignment={alignment}>{children}</MainHeading>
   ) : (
-    <SubHeading>{children}</SubHeading>
+    <SubHeading alignment={alignment}>{children}</SubHeading>
   );
 };
 

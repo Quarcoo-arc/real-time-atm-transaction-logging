@@ -23,8 +23,10 @@ const SubPage = ({ heading, subHeading, buttons = false, children }) => {
       <BackNavigation />
       <ContentWrapper>
         <Background />
-        {heading && <Heading>{heading}</Heading>}
-        <Heading type="sub">{subHeading}</Heading>
+        {heading && <Heading alignment="center">{heading}</Heading>}
+        <Heading alignment="center" type="sub">
+          {subHeading}
+        </Heading>
         <BodyWrapper>{children}</BodyWrapper>
         {buttons && (
           <ButtonsWrapper>
