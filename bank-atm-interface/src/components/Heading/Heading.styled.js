@@ -18,7 +18,7 @@ const SubHeading = styled.h2`
   font-style: normal;
   font-weight: 700;
   ${(props) => (props.alignment === "center" ? { textAlign: "center" } : {})}
-  @media screen and (max-width: 425px) {
+  @media screen and (max-width: 428px) {
     font-size: 1.8rem;
   }
 `;

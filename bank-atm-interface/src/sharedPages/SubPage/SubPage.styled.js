@@ -17,9 +17,12 @@ const BodyWrapper = styled.div`
 
 const ButtonsWrapper = styled.div`
   display: flex;
-  gap: 1rem;
+  gap: 3rem;
   alignitems: center;
   margin-top: 2rem;
+  @media screen and (max-width: 428px) {
+    gap: 2rem;
+  }
 `;
 
 export { ContentWrapper, BodyWrapper, ButtonsWrapper };
