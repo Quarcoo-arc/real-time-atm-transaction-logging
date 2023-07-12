@@ -34,7 +34,10 @@ const SubPage = ({ heading, subHeading, buttons = false, children }) => {
               <HomeRounded />
               <p>Home</p>
             </FilledWithIconButton>
-            <FilledWithIconButton onClick={() => setOpenDialogue(true)}>
+            <FilledWithIconButton
+              type="warning"
+              onClick={() => setOpenDialogue(true)}
+            >
               <LogoutRounded />
               <p>Logout</p>
             </FilledWithIconButton>

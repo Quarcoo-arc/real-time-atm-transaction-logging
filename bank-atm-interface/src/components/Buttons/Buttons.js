@@ -39,7 +39,7 @@ const FilledWithIconButton = ({ type, onClick, children }) => {
         justifyContent: "center",
         alignItems: "center",
         color: type === "warning" ? "white" : "black",
-        backgroundColor: type === "warning" ? "#F50606" : "#537188",
+        backgroundColor: type === "warning" ? "#F50606" : "white",
         padding: "0.8rem 1rem",
         boxSizing: "border-box",
         width: "15rem",
