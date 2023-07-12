@@ -3,8 +3,7 @@ import styled from "@emotion/styled";
 
 const LogoText = styled.a`
   font-family: var(--font-dancing-script);
-  font-size: 75px;
-  line-height: 96px;
+  font-size: 4rem;
   color: white;
   position: absolute;
   top: 1rem;
@@ -12,8 +11,7 @@ const LogoText = styled.a`
   margin: 0;
   cursor: pointer;
   @media screen and (max-width: 768px) {
-    font-size: 60px;
-    line-height: 60px;
+    font-size: 3rem;
     left: 1rem;
   }
   @media screen and (max-width: 426px) {

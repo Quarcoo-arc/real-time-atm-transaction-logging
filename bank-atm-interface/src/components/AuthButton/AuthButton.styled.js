@@ -4,7 +4,7 @@ import styled from "@emotion/styled";
 const Btn = styled.button`
   font-weight: 600;
   text-transform: capitalize;
-  font-size: 2rem;
+  font-size: 1.5rem;
   background-color: var(--gold);
   border-radius: 55px;
   padding: 1rem 1.5rem;
@@ -20,11 +20,11 @@ const Btn = styled.button`
   right: 2rem;
   @media screen and (max-width: 768px) {
     right: 1rem;
-    font-size: 1.6rem;
+    font-size: 1.3rem;
     top: 1rem;
   }
   @media screen and (max-width: 426px) {
-    font-size: 1.2rem;
+    font-size: 1rem;
     padding: 0.6rem 1rem;
     top: 1.2rem;
   }

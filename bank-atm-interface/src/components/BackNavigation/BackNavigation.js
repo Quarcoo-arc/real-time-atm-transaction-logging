@@ -8,7 +8,7 @@ const BackNavigation = () => {
   const router = useRouter();
   return (
     <BackNavigationWrapper onClick={() => router.back()}>
-      <ChevronLeft sx={{ fontSize: "1.2rem" }} />
+      <ChevronLeft sx={{ fontSize: "2rem" }} />
       <h3>Back</h3>
     </BackNavigationWrapper>
   );

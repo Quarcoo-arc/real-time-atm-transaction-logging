@@ -8,6 +8,7 @@ const ContentWrapper = styled.div`
   width: 95%;
   justify-content: center;
   margin: 10rem auto 3rem;
+  align-items: center;
 `;
 
 const BodyWrapper = styled.div`

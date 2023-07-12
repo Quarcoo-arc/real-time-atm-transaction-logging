@@ -3,12 +3,14 @@ import styled from "@emotion/styled";
 
 const BackNavigationWrapper = styled.div`
   display: flex;
-  gap: 0.5rem;
+  gap: 0.3rem;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   top: 1.2rem;
   right: 2rem;
   h3 {
-    font-size: 2rem;
+    font-size: 1.5rem;
     font-weight: 500;
   }
   cursor: pointer;

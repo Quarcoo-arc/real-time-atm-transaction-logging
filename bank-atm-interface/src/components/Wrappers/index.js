@@ -6,6 +6,7 @@ export const ContentWrapper = styled.div`
   flex-direction: column;
   width: 90%;
   gap: 5rem;
+  margin-bottom: 2rem;
   @media screen and (max-width: 768px) {
     align-items: center;
     text-align: center;

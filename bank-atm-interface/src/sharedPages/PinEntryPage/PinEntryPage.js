@@ -18,24 +18,38 @@ const PinEntryPage = ({ heading, otp, setOtp, onComplete }) => {
   const matchIsNumeric = (text) => {
     const isNumber = typeof text === "number";
     const isString = typeof text === "string";
-    return (isNumber || (isString && text !== "")) && !isNaN(Number(text));
+    return (
+      (isNumber || (isString && text !== "")) &&
+      (!isNaN(Number(text)) || text === "")
+    );
   };
 
   const validateChar = (value, index) => {
+    console.log(value);
     return matchIsNumeric(value);
   };
+
+  const checkDelete = (event) => {
+    if (event.key === "Backspace") {
+      otp && setOtp(otp.slice(0, -1));
+    }
+  };
+
   return (
     <SubPage subHeading={heading}>
       <ContentWrapper>
         <MuiOtpInput
           sx={{
+            ".MuiOutlinedInput-root": {
+              fontSize: "3rem",
+            },
             ".MuiOutlinedInput-root, .MuiOutlinedInput-root:hover": {
               color: "white",
             },
             ".MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
               borderColor: "#e1d4bb",
             },
-            fontSize: "1.2rem",
+            // fontSize: "1.2rem",
             fontFamily: "Poppins",
             ".MuiOutlinedInput-notchedOutline": {
               border: "none",
@@ -47,6 +61,7 @@ const PinEntryPage = ({ heading, otp, setOtp, onComplete }) => {
             },
           }}
           validateChar={validateChar}
+          onKeyDown={checkDelete}
           onComplete={onComplete}
           value={otp}
           onChange={(newValue) => setOtp(newValue)}
