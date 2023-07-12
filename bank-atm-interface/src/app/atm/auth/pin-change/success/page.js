@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { SubPage } from "@/sharedPages";
+import { Text } from "./page.styled";
 
 const SuccessfulPINChange = () => {
   return (
@@ -9,7 +10,7 @@ const SuccessfulPINChange = () => {
       subHeading="Your PIN change was processed successfully"
       buttons={true}
     >
-      <p>Thank you for banking with us.</p>
+      <Text>Thank you for banking with us.</Text>
     </SubPage>
   );
 };
