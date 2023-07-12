@@ -6,7 +6,7 @@ const MainHeading = styled.h1`
   font-size: 3.5rem;
   font-style: normal;
   font-weight: 400;
-  ${(props) => (props.aligment === "center" ? { textAlign: "center" } : {})}
+  ${(props) => (props.alignment === "center" ? { textAlign: "center" } : {})}
   @media screen and (max-width: 428px) {
     font-size: 2.5rem;
   }

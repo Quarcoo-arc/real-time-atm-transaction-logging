@@ -19,6 +19,7 @@ const ButtonsWrapper = styled.div`
   display: flex;
   gap: 1rem;
   alignitems: center;
+  margin-top: 2rem;
 `;
 
 export { ContentWrapper, BodyWrapper, ButtonsWrapper };

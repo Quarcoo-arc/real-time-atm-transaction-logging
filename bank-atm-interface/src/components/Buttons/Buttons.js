@@ -51,6 +51,9 @@ const FilledWithIconButton = ({ type, onClick, children }) => {
           background: "none",
           color: type === "warning" ? "#F50606" : "white",
         },
+        "@media screen and (max-width:527px)": {
+          width: "8rem",
+        },
       }}
       variant="contained"
     >
