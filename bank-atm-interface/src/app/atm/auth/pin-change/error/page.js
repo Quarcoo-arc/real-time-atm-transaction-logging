@@ -6,11 +6,13 @@ import { Text } from "@/components/Wrappers";
 const SuccessfulPINChange = () => {
   return (
     <SubPage
-      heading="Operation Complete"
-      subHeading="Your PIN change was processed successfully"
+      heading="Operation Failed"
+      subHeading="Your PIN change request could not  be processed"
       buttons={true}
     >
-      <Text>Thank you for banking with us.</Text>
+      <Text>
+        Please try again or walk into any of our offices for a PIN reset
+      </Text>
     </SubPage>
   );
 };
