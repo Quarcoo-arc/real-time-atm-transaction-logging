@@ -5,6 +5,11 @@ import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 
 const AmountEntryTextField = ({ onChange, value }) => {
+  const validateAmount = (e) => {
+    const amount = e.target.value;
+    const regex = /^([1-9][0-9]*(\.[0-9]{0,2})?$)|^(0?(\.[0-9]{0,2})?)$/;
+    return !amount || regex.test(amount.toString());
+  };
   return (
     <FormControl
       fullWidth
@@ -37,7 +42,7 @@ const AmountEntryTextField = ({ onChange, value }) => {
           "aria-label": "amount",
         }}
         value={value}
-        onChange={onChange}
+        onChange={(e) => validateAmount(e) && onChange(e)}
       />
       {/* <FormHelperText id="standard-amount-helper-text">amount</FormHelperText> */}
     </FormControl>
