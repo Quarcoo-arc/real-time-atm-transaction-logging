@@ -30,7 +30,7 @@ const cardsContentArr = [
   {
     img: <Image alt="Change PIN" src={changePINIcon} />,
     description: "Change PIN",
-    redirectUrl: "/",
+    redirectUrl: "/atm/auth/pin-change",
   },
   {
     img: <Image alt="Withdraw Money" src={withdrawMoneyIcon} />,

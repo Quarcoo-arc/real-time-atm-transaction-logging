@@ -9,6 +9,7 @@ import UserIcon from "./UserIcon/UserIcon";
 import Card from "./Card/Card";
 import Background from "./Background/Background";
 import ConfirmLogutPopUp from "./ConfirmLogoutPopUp/ConfirmLogutPopUp";
+import AmountEntryTextField from "./AmountEntryTextField/AmountEntryTextField";
 
 export {
   Logo,
@@ -22,4 +23,5 @@ export {
   Card,
   Background,
   ConfirmLogutPopUp,
+  AmountEntryTextField,
 };
