@@ -13,11 +13,12 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
-import { ChevronLeftRounded } from "@mui/icons-material";
-import { BackLink } from "./page.styled";
+import { ChevronLeftRounded, ReplayRounded } from "@mui/icons-material";
+import { BackLink, ButtonWrapper, RetryLink } from "./page.styled";
 
 const ForgotPassword = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
+  const [error, setError] = useState(true);
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")
@@ -81,12 +82,15 @@ const ForgotPassword = () => {
         heading="Email sent"
         body="Check your email for a link to reset your password" //TODO: Change dialogue box content on error
         footer={
-          <>
+          <ButtonWrapper>
             <BackLink href="/login">
-              <ChevronLeftRounded /> Back to Sign In
+              <ChevronLeftRounded /> <p>Back to Sign In</p>
             </BackLink>
+            <RetryLink onClick={() => setOpenDialogue(false)}>
+              <ReplayRounded /> <p>Retry</p>
+            </RetryLink>
             {/* Todo: Add retry button for the case of an error */}
-          </>
+          </ButtonWrapper>
         }
       />
     </AuthPage>

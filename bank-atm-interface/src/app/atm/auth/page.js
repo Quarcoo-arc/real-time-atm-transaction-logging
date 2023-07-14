@@ -24,8 +24,7 @@ const Auth = () => {
         open={openDialogue}
         setOpen={setOpenDialogue}
         heading="Invalid PIN"
-        body="Please try again. Or visit any of 
-our branches to reset your PIN."
+        body="Please try again. Or visit any of our branches to reset your PIN."
         footer={
           <>
             <FilledButton type="warning" onClick={() => setOpenDialogue(false)}>

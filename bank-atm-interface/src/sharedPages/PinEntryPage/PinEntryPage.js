@@ -25,7 +25,6 @@ const PinEntryPage = ({ heading, otp, setOtp, onComplete }) => {
   };
 
   const validateChar = (value, index) => {
-    console.log(value);
     return matchIsNumeric(value);
   };
 
@@ -57,7 +56,7 @@ const PinEntryPage = ({ heading, otp, setOtp, onComplete }) => {
             },
             ".MuiOutlinedInput-root:focus .MuiOutlinedInput-notchedOutline": {
               color: "white",
-              borderBottom: "2px solid #c2993a",
+              borderColor: "#c2993a !important",
             },
           }}
           validateChar={validateChar}
