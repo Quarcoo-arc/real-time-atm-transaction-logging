@@ -15,17 +15,17 @@ const cardsContentArr = [
   {
     img: <Image alt="Account Balance" src={accountBalanceIcon} />,
     description: "Account Balance",
-    redirectUrl: "/",
+    redirectUrl: "/atm/account-balance",
   },
   {
     img: <Image alt="Deposit Money" src={depositMoneyIcon} />,
     description: "Deposit Money",
-    redirectUrl: "/",
+    redirectUrl: "/atm/deposit",
   },
   {
     img: <Image alt="Account Info" src={accountInfoIcon} />,
     description: "Account Info",
-    redirectUrl: "/",
+    redirectUrl: "/atm/account-info",
   },
   {
     img: <Image alt="Change PIN" src={changePINIcon} />,
@@ -35,7 +35,7 @@ const cardsContentArr = [
   {
     img: <Image alt="Withdraw Money" src={withdrawMoneyIcon} />,
     description: "Withdraw Money",
-    redirectUrl: "/",
+    redirectUrl: "/atm/withdraw",
   },
   {
     img: (
