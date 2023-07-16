@@ -62,4 +62,13 @@ const InfoText = styled.p`
   }
 `;
 
-export { Container, Row, Col, GridValueText, InfoText };
+const AccountBalance = styled.h3`
+  font-weight: 700;
+  font-size: 5rem;
+  text-align: center;
+  @media screen and (max-width: 665px) {
+    font-size: 3.5rem;
+  }
+`;
+
+export { Container, Row, Col, GridValueText, InfoText, AccountBalance };
