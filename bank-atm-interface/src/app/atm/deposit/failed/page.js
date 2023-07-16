@@ -2,10 +2,9 @@
 import { SubPage } from "@/sharedPages";
 import React from "react";
 import {
-  Grid,
   GridWrapper,
+  PageInfoText,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
-import { InfoText } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents.styled";
 
 const WithdrawalSuccess = () => {
   return (
@@ -15,11 +14,12 @@ const WithdrawalSuccess = () => {
       buttons={true}
     >
       <GridWrapper>
-        <InfoText>
-          <div>Please try again!</div>
+        <PageInfoText>
+          Please try again!
+          <br />
           If the problem persists, kindly contact the Bank Support Center on{" "}
           <span>+233 555 93 5570</span>
-        </InfoText>
+        </PageInfoText>
       </GridWrapper>
     </SubPage>
   );

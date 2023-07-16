@@ -5,6 +5,7 @@ import {
   Container,
   Row,
   GridValueText,
+  InfoText,
 } from "./DepositWithdrawalComponents.styled";
 
 const Grid = ({ title, value }) => {
@@ -16,6 +17,8 @@ const Grid = ({ title, value }) => {
   );
 };
 
+const PageInfoText = ({ children }) => <InfoText>{children}</InfoText>;
+
 const GridWrapper = ({ children }) => <Container>{children}</Container>;
 
-export { Grid, GridWrapper };
+export { Grid, GridWrapper, PageInfoText };

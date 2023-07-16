@@ -54,6 +54,12 @@ const InfoText = styled.p`
   @media screen and (max-width: 991px) {
     width: 100%;
   }
+  @media screen and (max-width: 428px) {
+    font-size: 1.6rem;
+    span {
+      font-size: 1.5rem;
+    }
+  }
 `;
 
 export { Container, Row, Col, GridValueText, InfoText };
