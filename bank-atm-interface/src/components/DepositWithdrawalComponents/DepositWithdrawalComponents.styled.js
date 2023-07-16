@@ -5,11 +5,14 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   justify-self: center;
   align-self: center;
   gap: 1.5rem;
   margin-bottom: 3rem;
+  @media screen and (max-width: 428px) {
+    align-items: center;
+  }
 `;
 const Row = styled.div`
   display: flex;
@@ -36,8 +39,16 @@ const Col = styled.div`
 const GridValueText = styled.p`
   font-size: 2rem;
   font-weight: 600;
+  word-wrap: break-word;
+  max-width: 20rem;
   @media screen and (max-width: 560px) {
     font-size: 1.8rem;
+  }
+  @media screen and (max-width: 354px) {
+    max-width: 16rem;
+  }
+  @media screen and (min-width: 1400px) {
+    max-width: 40rem;
   }
 `;
 
