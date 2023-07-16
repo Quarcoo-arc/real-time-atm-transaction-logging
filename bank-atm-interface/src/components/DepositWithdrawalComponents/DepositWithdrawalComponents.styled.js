@@ -4,6 +4,8 @@ import styled from "@emotion/styled";
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   justify-self: center;
   align-self: center;
   gap: 1.5rem;
@@ -31,7 +33,7 @@ const Col = styled.div`
   }
 `;
 
-const Text = styled.p`
+const GridValueText = styled.p`
   font-size: 2rem;
   font-weight: 600;
   @media screen and (max-width: 560px) {
@@ -39,4 +41,19 @@ const Text = styled.p`
   }
 `;
 
-export { Container, Row, Col, Text };
+const InfoText = styled.p`
+  font-size: 1.8rem;
+  font-weight: 500;
+  text-align: center;
+  width: 70%;
+  span {
+    color: #e6e6e6;
+    font-weight: 700;
+    font-size: 1.7rem;
+  }
+  @media screen and (max-width: 991px) {
+    width: 100%;
+  }
+`;
+
+export { Container, Row, Col, GridValueText, InfoText };

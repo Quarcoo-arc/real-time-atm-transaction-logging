@@ -4,14 +4,14 @@ import {
   Col,
   Container,
   Row,
-  Text,
+  GridValueText,
 } from "./DepositWithdrawalComponents.styled";
 
 const Grid = ({ title, value }) => {
   return (
     <Row>
       <Col>{title}</Col>
-      <Text>{value}</Text>
+      <GridValueText>{value}</GridValueText>
     </Row>
   );
 };
