@@ -4,9 +4,28 @@ import {
   GridWrapper,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
 import { SubPage } from "@/sharedPages";
-import React from "react";
+import React, { useEffect } from "react";
 
 const AccountInfo = () => {
+  useEffect(async () => {
+    const fetchData = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/account-info`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "Application/json",
+        },
+        body: JSON.stringify({
+          pin: "1234",
+        }),
+      }
+    );
+
+    const data = await fetchData.json();
+
+    console.log(data);
+  }, []);
+
   return (
     <SubPage subHeading="Here are your account details!" buttons={true}>
       <GridWrapper>

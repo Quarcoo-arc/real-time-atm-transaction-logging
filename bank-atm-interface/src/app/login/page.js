@@ -9,8 +9,10 @@ import { useFormik } from "formik";
 import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { Wrapper } from "./page.styled";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
+  const router = useRouter();
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")
@@ -28,8 +30,24 @@ const Login = () => {
       password: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
+    onSubmit: async (values) => {
+      const result = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/login`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+          body: JSON.stringify({
+            email: values.email,
+            password: values.password,
+          }),
+        }
+      );
+      const data = await result.json();
+      if (data.success) {
+        router.push("/atm");
+      }
     },
   });
 

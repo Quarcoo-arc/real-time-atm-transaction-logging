@@ -128,7 +128,10 @@ app.post(
   "/login",
   passport.authenticate("local", { failureMessage: true }),
   (req, res) => {
-    res.send(`${req.user.name}, you have been logged in successfully`);
+    res.send({
+      success: true,
+      message: `${req.user.name}, you have been logged in successfully`,
+    });
     // TODO: Send email upon login
   }
 );
@@ -144,12 +147,13 @@ app.post("/signup", async (req, res, next) => {
 
     const result = await user.save();
 
-    res.send(result);
+    res.send({ success: true, data: result });
     // TODO: Send email upon successful account creation
   } catch (error) {
     res.send({
       success: false,
       error,
+      message: "Sign up failed",
     });
   }
 });
@@ -329,7 +333,7 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
   }
 });
 
-app.get("/account-balance", ensureLoggedIn, checkPIN, async (req, res) => {
+app.post("/account-balance", ensureLoggedIn, checkPIN, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     res.json({
@@ -346,7 +350,7 @@ app.get("/account-balance", ensureLoggedIn, checkPIN, async (req, res) => {
   }
 });
 
-app.get("/account-info", ensureLoggedIn, checkPIN, async (req, res) => {
+app.post("/account-info", ensureLoggedIn, checkPIN, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     res.json({
