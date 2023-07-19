@@ -51,8 +51,56 @@ const db = mongoose.connection;
  *
  */
 
+const NO_ERROR = "NO_ERROR";
+const TRANSACTION_TIMEOUT = "TRANSACTION_TIMEOUT";
+const INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR";
+const CONNECTION_DISCONNECTED = "CONNECTION_DISCONNECTED";
+
+const ERRORS = {
+  NO_ERROR,
+  TRANSACTION_TIMEOUT,
+  INTERNAL_SERVER_ERROR,
+  CONNECTION_DISCONNECTED,
+};
+
 const getAmount = (num) => (num / 100).toFixed(2);
 const setAmount = (num) => num * 100;
+
+const globalSchema = new Schema({
+  _id: { type: String, required: true },
+  currentError: {
+    type: String,
+    required: true,
+    enum: [...Object.values(ERRORS)],
+  },
+  activeStaffEmail: {
+    type: String,
+    required: true,
+    unique: true,
+    work: mongoose.SchemaTypes.Email,
+    home: mongoose.SchemaTypes.Email,
+  },
+  activeStaffName: { type: String, required: true },
+  atmBalance: { type: Number, get: getAmount, set: setAmount },
+});
+
+const Global = model("Global", globalSchema);
+
+const globalVarsExist = async () => {
+  const global = await Global.findById("globalVars").exec();
+  return global;
+};
+
+if (!Promise.resolve(globalVarsExist())) {
+  const globalVars = new Global({
+    _id: "globalVars",
+    currentError: NO_ERROR,
+    activeStaffEmail: "michaelquarcoo04@gmail.com",
+    activeStaffName: "Michael Quarcoo",
+    atmBalance: 4500.45,
+  });
+  globalVars.save();
+}
 
 const userSchema = new Schema({
   accountNumber: String,
@@ -120,4 +168,4 @@ const getNextSequenceVal = async (seq_id) => {
   return sequenceDoc.val;
 };
 
-module.exports = { User, Transaction, db, getNextSequenceVal };
+module.exports = { User, Transaction, Global, db, getNextSequenceVal };

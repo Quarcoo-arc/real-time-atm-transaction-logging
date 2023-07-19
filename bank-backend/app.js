@@ -1,7 +1,13 @@
 const session = require("express-session");
 const connect_ensure_login = require("connect-ensure-login");
 const MongoStore = require("connect-mongo");
-const { db, User, Transaction, getNextSequenceVal } = require("./models.js");
+const {
+  db,
+  User,
+  Transaction,
+  getNextSequenceVal,
+  Global,
+} = require("./models.js");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bodyParser = require("body-parser");
@@ -13,9 +19,6 @@ const { format, transports, createLogger } = require("winston");
 require("winston-mongodb");
 const {
   ERRORS,
-  getActiveStaffEmail,
-  getActiveStaffName,
-  updateActiveUserDetails,
   getCurrentError,
   updateCurrentError,
   getAtmBalance,
@@ -197,8 +200,12 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
     }
 
     const user = await User.findById(req.user.id);
-    if (getCurrentError() !== NO_ERROR && ERRORS[getCurrentError()]) {
-      const err = getCurrentError()
+    const globalVars = await Global.findById("globalVars").exec();
+    if (
+      globalVars.currentError !== NO_ERROR &&
+      ERRORS[globalVars.currentError]
+    ) {
+      const err = globalVars.currentError
         .split("_")
         .map(
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -230,7 +237,9 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
     user.accountBalance = +user.accountBalance + +req.body.amount;
     const result = await user.save();
 
-    updateAtmBalance(getAtmBalance() + +req.body.amount);
+    globalVars.atmBalance = +globalVars.atmBalance + +req.body.amount;
+
+    await globalVars.save();
 
     log.info("Deposit successful", {
       transactionId: await getNextSequenceVal("sequence"),
@@ -501,18 +510,22 @@ app.post("/verify-pin", ensureLoggedIn, checkPIN, (req, res) => {
   res.json({ success: true, message: "PIN verified" });
 });
 
-app.get("/active-staff", (req, res) => {
+app.get("/active-staff", async (req, res) => {
   try {
+    const globalInfo = await Global.findById("globalVars").exec();
     res.json({
       success: true,
-      data: { name: getActiveStaffName(), email: getActiveStaffEmail() },
+      data: {
+        name: globalInfo.activeStaffName,
+        email: globalInfo.activeStaffEmail,
+      },
     });
   } catch (error) {
     res.json({ success: false, error: error.stack });
   }
 });
 
-app.post("/active-staff", (req, res) => {
+app.post("/active-staff", async (req, res) => {
   try {
     const name = req.body.name;
     const email = req.body.email;
@@ -527,12 +540,17 @@ app.post("/active-staff", (req, res) => {
       return res.json({ success: false, message: "Invalid email address" });
     }
 
-    updateActiveUserDetails(name, email);
-    const [newName, newEmail] = [getActiveStaffName(), getActiveStaffEmail()];
+    const globalInfo = await Global.findOneAndUpdate(
+      { _id: "globalVars" },
+      { activeStaffEmail: email, activeStaffName: name }
+    ).exec();
 
     res.json({
       success: true,
-      data: { name: newName, email: newEmail },
+      data: {
+        name,
+        email,
+      },
       message: "Successfully updated active staff details",
     });
   } catch (error) {
