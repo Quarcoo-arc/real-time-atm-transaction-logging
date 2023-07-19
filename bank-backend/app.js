@@ -182,10 +182,7 @@ app.post("/signup", async (req, res, next) => {
 });
 
 app.post("/deposit", ensureLoggedIn, async (req, res) => {
-  /** TODO:
-   * Upon a failed deposit, a transaction document should be created with
-   * the transaction details.
-   *
+  /** TODO:   *
    * Transactions should be logged unto bank-atm-interface in real time
    *
    *
@@ -207,17 +204,17 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         )
         .join(" ");
-      log.error("Withdrawal failed", {
+      log.error("Deposit failed", {
         transactionId: await getNextSequenceVal("sequence"),
         accountNumber: user.accountNumber,
-        type: "withdrawal",
+        type: "deposit",
         amount: req.body.amount,
         status: "failed",
         description: err,
       });
       const transaction = new Transaction({
         accountNumber: user.accountNumber,
-        type: "withdrawal",
+        type: "deposit",
         amount: req.body.amount,
         status: "failed",
         description: err,
@@ -235,6 +232,15 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
 
     updateAtmBalance(getAtmBalance() + +req.body.amount);
 
+    log.info("Deposit successful", {
+      transactionId: await getNextSequenceVal("sequence"),
+      accountNumber: user.accountNumber,
+      type: "deposit",
+      amount: req.body.amount,
+      status: "completed",
+      description: "Operation complete",
+    });
+
     const transaction = new Transaction({
       accountNumber: user.accountNumber,
       type: "deposit",
@@ -247,6 +253,14 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
     res.send({ success: true, data: { currentBalance: user.accountBalance } });
   } catch (error) {
     const user = await User.findById(req.user.id);
+    log.error("Deposit failed", {
+      transactionId: await getNextSequenceVal("sequence"),
+      accountNumber: user.accountNumber,
+      type: "deposit",
+      amount: req.body.amount,
+      status: "failed",
+      description: error.message ? error.message : "Internal Server Error",
+    });
     const transaction = new Transaction({
       accountNumber: user.accountNumber,
       type: "deposit",
@@ -279,6 +293,14 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
 
     const user = await User.findById(req.user.id).exec();
     if (+req.body.amount > +user.accountBalance) {
+      log.error("Withdrawal failed", {
+        transactionId: await getNextSequenceVal("sequence"),
+        accountNumber: user.accountNumber,
+        type: "withdrawal",
+        amount: req.body.amount,
+        status: "failed",
+        description: "Insufficient Funds",
+      });
       const transaction = new Transaction({
         accountNumber: user.accountNumber,
         type: "withdrawal",
@@ -295,6 +317,14 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
       });
     }
     if (+req.body.amount > getAtmBalance()) {
+      log.error("Withdrawal failed", {
+        transactionId: await getNextSequenceVal("sequence"),
+        accountNumber: user.accountNumber,
+        type: "withdrawal",
+        amount: req.body.amount,
+        status: "failed",
+        description: "Insufficient ATM Funds",
+      });
       const transaction = new Transaction({
         accountNumber: user.accountNumber,
         type: "withdrawal",
@@ -317,6 +347,14 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         )
         .join(" ");
+      log.error("Withdrawal failed", {
+        transactionId: await getNextSequenceVal("sequence"),
+        accountNumber: user.accountNumber,
+        type: "withdrawal",
+        amount: req.body.amount,
+        status: "failed",
+        description: err,
+      });
       const transaction = new Transaction({
         accountNumber: user.accountNumber,
         type: "withdrawal",
@@ -337,6 +375,14 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
 
     updateAtmBalance(getAtmBalance() - +req.body.amount);
 
+    log.error("Withdrawal successful", {
+      transactionId: await getNextSequenceVal("sequence"),
+      accountNumber: user.accountNumber,
+      type: "withdrawal",
+      amount: req.body.amount,
+      status: "completed",
+      description: "Operation complete",
+    });
     const transaction = new Transaction({
       accountNumber: user.accountNumber,
       type: "withdrawal",
@@ -348,6 +394,14 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
     res.send({ success: true, data: { currentBalance: user.accountBalance } });
   } catch (error) {
     const user = await User.findById(req.user.id);
+    log.error("Withdrawal failed", {
+      transactionId: await getNextSequenceVal("sequence"),
+      accountNumber: user.accountNumber,
+      type: "withdrawal",
+      amount: req.body.amount,
+      status: "failed",
+      description: "Insufficient Funds",
+    });
     const transaction = new Transaction({
       accountNumber: user.accountNumber,
       type: "withdrawal",
