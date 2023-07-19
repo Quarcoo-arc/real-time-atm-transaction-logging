@@ -1,7 +1,7 @@
 const session = require("express-session");
 const connect_ensure_login = require("connect-ensure-login");
 const MongoStore = require("connect-mongo");
-const { db, User, Transaction } = require("./models.js");
+const { db, User, Transaction, getNextSequenceVal } = require("./models.js");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bodyParser = require("body-parser");
@@ -9,6 +9,8 @@ const nodemailer = require("nodemailer");
 const express = require("express");
 const validator = require("email-validator");
 const cors = require("cors");
+const { format, transports, createLogger } = require("winston");
+require("winston-mongodb");
 const {
   ERRORS,
   getActiveStaffEmail,
@@ -32,6 +34,9 @@ const app = express();
 const port = 5000;
 
 const SESSOIN_COOKIE_MAX_AGE_IN_MS = 5 * 60 * 1000; // 5 minutes
+
+const http = require("http").Server(app);
+const socketIO = require("socket.io")(http);
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -105,6 +110,24 @@ const checkPIN = async (req, res, next) => {
   }
 };
 
+const transportOptions = {
+  db,
+  collection: "transaction_logs",
+  options: {
+    useUnifiedTopology: true,
+  },
+  format: format.combine(
+    format.timestamp(),
+    // Convert logs to a json format
+    format.json(),
+    format.metadata({ fillExcept: ["message", "level", "timestamp", "label"] })
+  ),
+};
+
+//Logger
+const log = createLogger({
+  transports: [new transports.MongoDB(transportOptions)],
+});
 // Send email
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -184,6 +207,14 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         )
         .join(" ");
+      log.error("Withdrawal failed", {
+        transactionId: await getNextSequenceVal("sequence"),
+        accountNumber: user.accountNumber,
+        type: "withdrawal",
+        amount: req.body.amount,
+        status: "failed",
+        description: err,
+      });
       const transaction = new Transaction({
         accountNumber: user.accountNumber,
         type: "withdrawal",

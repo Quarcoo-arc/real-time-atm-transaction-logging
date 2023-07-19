@@ -99,6 +99,25 @@ transactionSchema.plugin(autoInc, {
 
 const Transaction = model("Transaction", transactionSchema);
 
-// Update withdrawal method to check for errors and act accordingly - could be implemented as a middleware
+const counterSchema = new Schema({
+  _id: { type: String, required: true },
+  val: { type: Number, required: true },
+});
 
-module.exports = { User, Transaction, db };
+const Counter = model("Counter", counterSchema);
+
+const counterExists = Promise.resolve(Counter.findById("sequence").exec());
+
+if (!counterExists) {
+  const counter = new Counter({ _id: "sequence", val: 100000 });
+  counter.save();
+}
+
+const getNextSequenceVal = async (seq_id) => {
+  const sequenceDoc = await Counter.findById(seq_id).exec();
+  sequenceDoc.val += 1;
+  await sequenceDoc.save();
+  return sequenceDoc.val;
+};
+
+module.exports = { User, Transaction, db, getNextSequenceVal };
