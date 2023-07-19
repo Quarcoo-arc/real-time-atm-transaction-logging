@@ -12,45 +12,6 @@ mongoose.connect(process.env.mongodburl, {
 });
 const db = mongoose.connection;
 
-/**
- * Database Models
- *
- * **User**
- * account no.
- * email
- * password
- * name
- * acc balance
- * ATM PIN
- *
- * **Transaction**
- * Transaction ID
- * Transaction type: Deposit/Withdrawal
- * Timestamp
- * Account No.
- * Amount
- * Status: Pending / Completed / Failed
- *
- * **Errors**
- * Transaction ID
- * Error Type: User / ATM / System
- * - User - Inadequate Funds
- * - ATM - Indadequate Funds
- * - System - System Malfunctioning
- *
- * **Globals**  - Static Variables
- * ATM Balance
- * Errors
- *
- * **Authorities**
- * Email
- * Passoword
- * IsActive (Active authority receives the email)
- *
- *
- *
- */
-
 const NO_ERROR = "NO_ERROR";
 const TRANSACTION_TIMEOUT = "TRANSACTION_TIMEOUT";
 const INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR";
@@ -168,4 +129,12 @@ const getNextSequenceVal = async (seq_id) => {
   return sequenceDoc.val;
 };
 
-module.exports = { User, Transaction, Global, db, getNextSequenceVal };
+module.exports = {
+  User,
+  Transaction,
+  Global,
+  db,
+  getNextSequenceVal,
+  ERRORS,
+  NO_ERROR,
+};

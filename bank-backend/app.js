@@ -7,6 +7,8 @@ const {
   Transaction,
   getNextSequenceVal,
   Global,
+  ERRORS,
+  NO_ERROR,
 } = require("./models.js");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -17,14 +19,6 @@ const validator = require("email-validator");
 const cors = require("cors");
 const { format, transports, createLogger } = require("winston");
 require("winston-mongodb");
-const {
-  ERRORS,
-  getCurrentError,
-  updateCurrentError,
-  getAtmBalance,
-  updateAtmBalance,
-  NO_ERROR,
-} = require("./constants.js");
 
 require("dotenv").config();
 
@@ -325,7 +319,8 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
         error: "Insufficient Funds",
       });
     }
-    if (+req.body.amount > getAtmBalance()) {
+    const globalVars = await Global.findById("globalVars").exec();
+    if (+req.body.amount > globalVars.atmBalance) {
       log.error("Withdrawal failed", {
         transactionId: await getNextSequenceVal("sequence"),
         accountNumber: user.accountNumber,
@@ -349,8 +344,11 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
         error: "Insufficient ATM Funds",
       });
     }
-    if (getCurrentError() !== NO_ERROR && ERRORS[getCurrentError()]) {
-      const err = getCurrentError()
+    if (
+      globalVars.currentError !== NO_ERROR &&
+      ERRORS[globalVars.currentError]
+    ) {
+      const err = globalVars.currentError
         .split("_")
         .map(
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
@@ -382,7 +380,8 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
     user.accountBalance = +user.accountBalance - +req.body.amount;
     const result = await user.save();
 
-    updateAtmBalance(getAtmBalance() - +req.body.amount);
+    globalVars.atmBalance = +globalVars.atmBalance - +req.body.amount;
+    await globalVars.save();
 
     log.error("Withdrawal successful", {
       transactionId: await getNextSequenceVal("sequence"),
@@ -562,9 +561,10 @@ app.post("/active-staff", async (req, res) => {
   }
 });
 
-app.get("/current-error", (req, res) => {
+app.get("/current-error", async (req, res) => {
   try {
-    res.json({ success: true, data: { error: getCurrentError() } });
+    const globalVars = await Global.findById("globalVars").exec();
+    res.json({ success: true, data: { error: globalVars.currentError } });
   } catch (error) {
     res.json({
       success: false,
@@ -574,14 +574,16 @@ app.get("/current-error", (req, res) => {
   }
 });
 
-app.post("/current-error", (req, res) => {
+app.post("/current-error", async (req, res) => {
   try {
     if (!req.body?.error || !ERRORS[req.body.error]) {
       res.status(400);
       return res.json({ success: false, message: "Invalid request body" });
     }
-    updateCurrentError(ERRORS[req.body.error]);
-    res.json({ success: true, data: { currentError: getCurrentError() } });
+    const globalVars = await Global.findById("globalVars").exec();
+    globalVars.currentError = ERRORS[req.body.error];
+    const result = await globalVars.save();
+    res.json({ success: true, data: { currentError: result.currentError } });
   } catch (error) {
     return res.json({
       success: false,
@@ -591,15 +593,16 @@ app.post("/current-error", (req, res) => {
   }
 });
 
-app.get("/atm-balance", (req, res) => {
+app.get("/atm-balance", async (req, res) => {
   try {
-    res.json({ success: true, data: { atmBalance: getAtmBalance() } });
+    const globalVars = await Global.findById("globalVars").exec();
+    res.json({ success: true, data: { atmBalance: globalVars.atmBalance } });
   } catch (error) {
     res.json({ success: false, error: error.stack });
   }
 });
 
-app.post("/atm-balance", (req, res) => {
+app.post("/atm-balance", async (req, res) => {
   try {
     if (!req.body?.amount || isNaN(req.body.amount) || +req.body.amount < 0) {
       res.status(400);
@@ -608,11 +611,14 @@ app.post("/atm-balance", (req, res) => {
         error: "Invalid request body!",
       });
     }
-    updateAtmBalance(getAtmBalance() + +req.body.amount);
+    const globalVars = await Global.findById("globalVars").exec();
+    globalVars.atmBalance = +globalVars.atmBalance + +req.body.amount;
+    const result = await globalVars.save();
+
     return res.json({
       success: true,
       data: {
-        atmBalance: getAtmBalance(),
+        atmBalance: result.atmBalance,
       },
     });
   } catch (error) {
