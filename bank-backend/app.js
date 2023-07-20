@@ -8,6 +8,7 @@ const {
   Global,
   ERRORS,
   NO_ERROR,
+  TransactionLogs,
 } = require("./models.js");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
@@ -589,6 +590,36 @@ app.post("/atm-balance", async (req, res) => {
         atmBalance: result.atmBalance,
       },
     });
+  } catch (error) {
+    res.json({ success: false, error: error.stack });
+  }
+});
+
+app.get("/logs", async (req, res) => {
+  try {
+    const data = await TransactionLogs.find({}).toArray();
+    res.json({ success: true, noOfLogs: data.length, data });
+  } catch (error) {
+    res.json({ success: false, error: error.stack });
+  }
+});
+
+app.post("/logs/filter", async (req, res) => {
+  try {
+    const searchQuery = req.body.searchString;
+    const regex = new RegExp(searchQuery, "i");
+    const data = await TransactionLogs.find({
+      $or: [
+        { "meta.accountNumber": regex },
+        { "meta.transactionId": regex },
+        { "meta.amount": { $gte: +searchQuery } },
+        { "meta.status": regex },
+        { "meta.type": regex },
+        { "meta.timestamp": { $gte: new Date(searchQuery) } },
+        { "meta.description": regex },
+      ],
+    }).toArray();
+    res.json({ success: true, noOfLogs: data.length, data });
   } catch (error) {
     res.json({ success: false, error: error.stack });
   }

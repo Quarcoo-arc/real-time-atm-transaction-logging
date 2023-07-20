@@ -111,9 +111,12 @@ const getNextSequenceVal = async (seq_id) => {
   return sequenceDoc.val;
 };
 
+const TransactionLogs = db.collection("transaction_logs");
+
 module.exports = {
   User,
   Global,
+  TransactionLogs,
   db,
   getNextSequenceVal,
   ERRORS,
