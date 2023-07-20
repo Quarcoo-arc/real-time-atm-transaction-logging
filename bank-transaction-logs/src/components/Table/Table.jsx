@@ -26,6 +26,7 @@ const columns = [
     },
   },
   { id: "transactionID", label: "Transaction\u00a0ID", minWidth: 120 },
+  { id: "transactionType", label: "Transaction\u00a0Type", minWidth: 120 },
   {
     id: "accountNo",
     label: "Account\u00a0No.",
@@ -43,7 +44,14 @@ const columns = [
   },
 ];
 
-function createData(date, transactionID, accountNo, status, description) {
+function createData(
+  date,
+  transactionID,
+  transactionType,
+  accountNo,
+  status,
+  description
+) {
   status = (
     <Status
       type={
@@ -57,13 +65,21 @@ function createData(date, transactionID, accountNo, status, description) {
       {status.charAt(0).toUpperCase() + status.slice(1)}
     </Status>
   );
-  return { date, transactionID, accountNo, status, description };
+  return {
+    date,
+    transactionID,
+    transactionType,
+    accountNo,
+    status,
+    description,
+  };
 }
 
 const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100014",
+    "Withdrawal",
     120000000000,
     "failed",
     "Insufficient user funds"
@@ -71,6 +87,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100013",
+    "Deposit",
     120000000004,
     "completed",
     "Operation successful"
@@ -78,6 +95,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100012",
+    "Withdrawal",
     120000000006,
     "failed",
     "Insufficient ATM funds"
@@ -85,6 +103,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100011",
+    "Deposit",
     120000000003,
     "completed",
     "Operation successful"
@@ -92,6 +111,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100010",
+    "Withdrawal",
     120000000007,
     "completed",
     "Operation successful"
@@ -99,6 +119,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100009",
+    "Deposit",
     120000000008,
     "completed",
     "Operation successful"
@@ -106,6 +127,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100008",
+    "Deposit",
     120000000001,
     "completed",
     "Operation successful"
@@ -113,6 +135,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100007",
+    "Withdrawal",
     120000000023,
     "completed",
     "Operation successful"
@@ -120,6 +143,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100006",
+    "Deposit",
     120000000435,
     "completed",
     "Operation successful"
@@ -127,6 +151,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100005",
+    "Withdrawal",
     120000004543,
     "failed",
     "Connection disconnected"
@@ -134,6 +159,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100004",
+    "Deposit",
     120000000345,
     "failed",
     "Internal server error"
@@ -141,6 +167,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100003",
+    "Deposit",
     120000034552,
     "completed",
     "Operation successful"
@@ -148,6 +175,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100002",
+    "Withdrawal",
     120000453444,
     "completed",
     "Operation successful"
@@ -155,6 +183,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100001",
+    "Deposit",
     120000345452,
     "completed",
     "Operation successful"
@@ -162,6 +191,7 @@ const rows = [
   createData(
     "2023-06-14T06:19:36.163+00:00",
     "100000",
+    "Withdrawal",
     120000000034,
     "completed",
     "Operation successful"
@@ -185,7 +215,7 @@ export default function StickyHeadTable() {
     <Paper
       sx={{
         width: "95%",
-        margin: "0 auto",
+        margin: "0 auto 3rem",
         td: {
           color: "black",
         },

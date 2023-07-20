@@ -4,7 +4,6 @@ const MongoStore = require("connect-mongo");
 const {
   db,
   User,
-  Transaction,
   getNextSequenceVal,
   Global,
   ERRORS,
@@ -32,8 +31,10 @@ const port = 5000;
 
 const SESSOIN_COOKIE_MAX_AGE_IN_MS = 5 * 60 * 1000; // 5 minutes
 
-const http = require("http").Server(app);
-const socketIO = require("socket.io")(http);
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -107,6 +108,19 @@ const checkPIN = async (req, res, next) => {
   }
 };
 
+const logTransaction = (info) => {
+  const msg = info.message;
+  delete info.message;
+  info.timestamp = new Date();
+
+  if (info.status === "failed") {
+    log.error(msg, info);
+  } else {
+    log.info(msg, info);
+  }
+  io.emit("transaction", info);
+};
+
 const transportOptions = {
   db,
   collection: "transaction_logs",
@@ -114,10 +128,9 @@ const transportOptions = {
     useUnifiedTopology: true,
   },
   format: format.combine(
-    format.timestamp(),
     // Convert logs to a json format
     format.json(),
-    format.metadata({ fillExcept: ["message", "level", "timestamp", "label"] })
+    format.metadata({ fillExcept: ["message", "level", "label"] })
   ),
 };
 
@@ -136,11 +149,18 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+io.on("connection", (socket) => {
+  console.log(`⚡: ${socket.id} user just connected`);
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
+  });
+});
+
 app.get("/", (req, res) => {
   if (req.user) {
-    res.send(`Welcome ${req.user.name}`);
+    res.send({ message: `Welcome ${req.user.name}` });
   } else {
-    res.send("Not Logged In!");
+    res.send({ message: "Not Logged In!" });
   }
 });
 
@@ -205,7 +225,9 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         )
         .join(" ");
-      log.error("Deposit failed", {
+
+      logTransaction({
+        message: "Deposit failed",
         transactionId: await getNextSequenceVal("sequence"),
         accountNumber: user.accountNumber,
         type: "deposit",
@@ -213,14 +235,6 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
         status: "failed",
         description: err,
       });
-      const transaction = new Transaction({
-        accountNumber: user.accountNumber,
-        type: "deposit",
-        amount: req.body.amount,
-        status: "failed",
-        description: err,
-      });
-      await transaction.save();
 
       res.status(500);
       return res.json({
@@ -235,7 +249,8 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
 
     await globalVars.save();
 
-    log.info("Deposit successful", {
+    logTransaction({
+      message: "Deposit successful",
       transactionId: await getNextSequenceVal("sequence"),
       accountNumber: user.accountNumber,
       type: "deposit",
@@ -243,20 +258,12 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
       status: "completed",
       description: "Operation complete",
     });
-
-    const transaction = new Transaction({
-      accountNumber: user.accountNumber,
-      type: "deposit",
-      amount: req.body.amount,
-      status: "completed",
-      description: "Operation complete",
-    });
-    await transaction.save();
 
     res.send({ success: true, data: { currentBalance: user.accountBalance } });
   } catch (error) {
     const user = await User.findById(req.user.id);
-    log.error("Deposit failed", {
+    logTransaction({
+      message: "Deposit failed",
       transactionId: await getNextSequenceVal("sequence"),
       accountNumber: user.accountNumber,
       type: "deposit",
@@ -264,14 +271,7 @@ app.post("/deposit", ensureLoggedIn, async (req, res) => {
       status: "failed",
       description: error.message ? error.message : "Internal Server Error",
     });
-    const transaction = new Transaction({
-      accountNumber: user.accountNumber,
-      type: "deposit",
-      amount: req.body.amount,
-      status: "failed",
-      description: error.message ? error.message : "Internal Server Error",
-    });
-    await transaction.save();
+
     res.json({
       success: false,
       error,
@@ -296,47 +296,33 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
 
     const user = await User.findById(req.user.id).exec();
     if (+req.body.amount > +user.accountBalance) {
-      log.error("Withdrawal failed", {
+      logTransaction({
+        message: "Withdrawal failed",
         transactionId: await getNextSequenceVal("sequence"),
         accountNumber: user.accountNumber,
         type: "withdrawal",
         amount: req.body.amount,
         status: "failed",
-        description: "Insufficient Funds",
+        description: "Insufficient user funds",
       });
-      const transaction = new Transaction({
-        accountNumber: user.accountNumber,
-        type: "withdrawal",
-        amount: req.body.amount,
-        status: "failed",
-        description: "Insufficient Funds",
-      });
-      await transaction.save();
 
       res.status(400);
       return res.json({
         success: false,
-        error: "Insufficient Funds",
+        error: "Insufficient User Funds",
       });
     }
     const globalVars = await Global.findById("globalVars").exec();
     if (+req.body.amount > globalVars.atmBalance) {
-      log.error("Withdrawal failed", {
+      logTransaction({
+        message: "Withdrawal failed",
         transactionId: await getNextSequenceVal("sequence"),
         accountNumber: user.accountNumber,
         type: "withdrawal",
         amount: req.body.amount,
         status: "failed",
-        description: "Insufficient ATM Funds",
+        description: "Insufficient ATM funds",
       });
-      const transaction = new Transaction({
-        accountNumber: user.accountNumber,
-        type: "withdrawal",
-        amount: req.body.amount,
-        status: "failed",
-        description: "Insufficient ATM Funds",
-      });
-      await transaction.save();
 
       res.status(500);
       return res.json({
@@ -354,7 +340,9 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
           (word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         )
         .join(" ");
-      log.error("Withdrawal failed", {
+
+      logTransaction({
+        message: "Withdrawal failed",
         transactionId: await getNextSequenceVal("sequence"),
         accountNumber: user.accountNumber,
         type: "withdrawal",
@@ -362,14 +350,6 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
         status: "failed",
         description: err,
       });
-      const transaction = new Transaction({
-        accountNumber: user.accountNumber,
-        type: "withdrawal",
-        amount: req.body.amount,
-        status: "failed",
-        description: err,
-      });
-      await transaction.save();
 
       res.status(500);
       return res.json({
@@ -383,7 +363,8 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
     globalVars.atmBalance = +globalVars.atmBalance - +req.body.amount;
     await globalVars.save();
 
-    log.error("Withdrawal successful", {
+    logTransaction({
+      message: "Withdrawal successful",
       transactionId: await getNextSequenceVal("sequence"),
       accountNumber: user.accountNumber,
       type: "withdrawal",
@@ -391,33 +372,20 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
       status: "completed",
       description: "Operation complete",
     });
-    const transaction = new Transaction({
-      accountNumber: user.accountNumber,
-      type: "withdrawal",
-      amount: req.body.amount,
-      status: "completed",
-      description: "Operation complete",
-    });
-    await transaction.save();
+
     res.send({ success: true, data: { currentBalance: user.accountBalance } });
   } catch (error) {
     const user = await User.findById(req.user.id);
-    log.error("Withdrawal failed", {
+    logTransaction({
+      message: "Withdrawal failed",
       transactionId: await getNextSequenceVal("sequence"),
-      accountNumber: user.accountNumber,
-      type: "withdrawal",
-      amount: req.body.amount,
-      status: "failed",
-      description: "Insufficient Funds",
-    });
-    const transaction = new Transaction({
       accountNumber: user.accountNumber,
       type: "withdrawal",
       amount: req.body.amount,
       status: "failed",
       description: error.message ? error.message : "Internal Server Error",
     });
-    await transaction.save();
+
     res.status(500);
     res.json({
       success: false,
@@ -635,6 +603,6 @@ app.use((err, req, res, next) => {
   res.json({ success: false, error: err });
 });
 
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });

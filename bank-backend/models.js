@@ -90,24 +90,6 @@ userSchema.plugin(uniqueValidator);
 
 const User = model("User", userSchema);
 
-const transactionSchema = new Schema({
-  id: String,
-  accountNumber: { type: Number, required: true },
-  type: { type: String, required: true, enum: ["deposit", "withdrawal"] },
-  timestamp: { type: Date, default: Date.now },
-  amount: { type: Number, get: getAmount, set: setAmount },
-  status: { type: String, required: true, enum: ["completed", "failed"] },
-  description: { type: String },
-});
-
-transactionSchema.plugin(autoInc, {
-  field: "id",
-  startAt: 100000,
-  incrementBy: 1,
-});
-
-const Transaction = model("Transaction", transactionSchema);
-
 const counterSchema = new Schema({
   _id: { type: String, required: true },
   val: { type: Number, required: true },
@@ -131,7 +113,6 @@ const getNextSequenceVal = async (seq_id) => {
 
 module.exports = {
   User,
-  Transaction,
   Global,
   db,
   getNextSequenceVal,
