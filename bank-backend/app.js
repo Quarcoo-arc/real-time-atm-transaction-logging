@@ -199,7 +199,7 @@ app.post("/signup", async (req, res, next) => {
   }
 });
 
-app.post("/deposit", ensureLoggedIn, async (req, res) => {
+app.post("/deposit", ensureLoggedIn, checkPIN, async (req, res) => {
   /** TODO:   *
    * Transactions should be logged unto bank-atm-interface in real time
    *

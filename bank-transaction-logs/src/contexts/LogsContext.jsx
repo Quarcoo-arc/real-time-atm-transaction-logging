@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const LogsContext = createContext();
@@ -11,13 +11,23 @@ export const LogsContextProvider = ({ children }) => {
 
   const loadLogs = async () => {
     try {
-    } catch (error) {}
+      const result = await fetch(`${BASE_URL}/logs`);
+      const data = await result.json();
+      setLogs(data.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const filterLogs = async () => {
     try {
     } catch (error) {}
   };
+
+  useEffect(() => {
+    const func = async () => await loadLogs();
+    func();
+  }, []);
 
   const socket = io(BASE_URL, {
     auth: {

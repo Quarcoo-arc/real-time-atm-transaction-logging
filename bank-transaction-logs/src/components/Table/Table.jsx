@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Paper from "@mui/material/Paper";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -9,6 +9,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { extractDateAndTime } from "../../utils";
 import { Status, DateAndTime } from "./Table.styled";
+import LogsContext from "../../contexts/LogsContext";
 
 const columns = [
   {
@@ -75,132 +76,11 @@ function createData(
   };
 }
 
-const rows = [
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100014",
-    "Withdrawal",
-    120000000000,
-    "failed",
-    "Insufficient user funds"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100013",
-    "Deposit",
-    120000000004,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100012",
-    "Withdrawal",
-    120000000006,
-    "failed",
-    "Insufficient ATM funds"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100011",
-    "Deposit",
-    120000000003,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100010",
-    "Withdrawal",
-    120000000007,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100009",
-    "Deposit",
-    120000000008,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100008",
-    "Deposit",
-    120000000001,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100007",
-    "Withdrawal",
-    120000000023,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100006",
-    "Deposit",
-    120000000435,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100005",
-    "Withdrawal",
-    120000004543,
-    "failed",
-    "Connection disconnected"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100004",
-    "Deposit",
-    120000000345,
-    "failed",
-    "Internal server error"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100003",
-    "Deposit",
-    120000034552,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100002",
-    "Withdrawal",
-    120000453444,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100001",
-    "Deposit",
-    120000345452,
-    "completed",
-    "Operation successful"
-  ),
-  createData(
-    "2023-06-14T06:19:36.163+00:00",
-    "100000",
-    "Withdrawal",
-    120000000034,
-    "completed",
-    "Operation successful"
-  ),
-];
-
 export default function StickyHeadTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const { logs } = useContext(LogsContext);
+  const [data, setData] = useState([]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -210,6 +90,21 @@ export default function StickyHeadTable() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
+
+  useEffect(() => {
+    logs.forEach((log) => console.log(log.timestamp));
+    const newData = logs.map((log) =>
+      createData(
+        log.meta.timestamp,
+        log.meta.transactionId,
+        log.meta.type,
+        log.meta.accountNumber,
+        log.meta.status,
+        log.meta.description
+      )
+    );
+    setData(newData);
+  }, [logs]);
 
   return (
     <Paper
@@ -246,7 +141,7 @@ export default function StickyHeadTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
+            {data
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row) => {
                 return (
@@ -273,7 +168,7 @@ export default function StickyHeadTable() {
       <TablePagination
         rowsPerPageOptions={[5, 10, 20, 50, 100]}
         component="div"
-        count={rows.length}
+        count={data.length}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
