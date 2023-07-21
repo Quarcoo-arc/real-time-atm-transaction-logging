@@ -598,7 +598,7 @@ app.post("/atm-balance", async (req, res) => {
 app.get("/logs", async (req, res) => {
   try {
     const data = await TransactionLogs.find({}).toArray();
-    res.json({ success: true, noOfLogs: data.length, data });
+    res.json({ success: true, count: data.length, data });
   } catch (error) {
     res.json({ success: false, error: error.stack });
   }
@@ -619,7 +619,7 @@ app.post("/logs/filter", async (req, res) => {
         { "meta.description": regex },
       ],
     }).toArray();
-    res.json({ success: true, noOfLogs: data.length, data });
+    res.json({ success: true, count: data.length, data });
   } catch (error) {
     res.json({ success: false, error: error.stack });
   }

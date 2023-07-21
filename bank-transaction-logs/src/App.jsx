@@ -8,27 +8,11 @@ import {
   StaffOnDuty,
 } from "./components";
 import { StaffBtnAndSearchWrapper } from "./App.styled";
-import { io } from "socket.io-client";
+import { LogsContextProvider } from "./contexts/LogsContext";
 
 function App() {
-  const socket = io(import.meta.env.VITE_BACKEND_BASE_URL, {
-    auth: {
-      token: "json-web-token",
-    },
-    transports: ["websocket"],
-  });
-  socket.on("connect", function () {
-    console.log("Made socket connection", socket.id);
-  });
-  socket.on("transaction", (msg) => console.log(msg));
-  socket.on("disconnect", function () {
-    console.log("disconnect");
-  });
-  socket.on("connect_error", function (err) {
-    console.log("connection errror", err);
-  });
   return (
-    <>
+    <LogsContextProvider>
       <Background />
       <Logo />
       <Heading />
@@ -38,7 +22,7 @@ function App() {
         <SearchBar />
       </StaffBtnAndSearchWrapper>
       <Table />
-    </>
+    </LogsContextProvider>
   );
 }
 
