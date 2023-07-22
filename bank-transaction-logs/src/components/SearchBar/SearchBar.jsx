@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useContext } from "react";
 import Paper from "@mui/material/Paper";
 import InputBase from "@mui/material/InputBase";
 import IconButton from "@mui/material/IconButton";
 import searchIcon from "../../assets/searchIcon.svg";
+import LogsContext from "../../contexts/LogsContext";
 
 const SearchBar = () => {
-  const [searchString, setSearchString] = useState("");
+  const { searchString, setSearchString } = useContext(LogsContext);
   const handleChange = (e) => setSearchString(e.target.value);
   return (
     <Paper

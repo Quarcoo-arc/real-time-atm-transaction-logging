@@ -7,7 +7,7 @@ const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 
 export const LogsContextProvider = ({ children }) => {
   const [logs, setLogs] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchString, setSearchString] = useState("");
 
   const loadLogs = async () => {
     try {
@@ -21,13 +21,25 @@ export const LogsContextProvider = ({ children }) => {
 
   const filterLogs = async () => {
     try {
-    } catch (error) {}
+      const result = await fetch(`${BASE_URL}/logs/filter`, {
+        method: "POST",
+        body: JSON.stringify({
+          searchString,
+        }),
+      });
+      const data = await result.json();
+      setLogs(data.data);
+      console.log(data.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
-    const func = async () => await loadLogs();
+    const func = async () =>
+      searchString ? await filterLogs() : await loadLogs();
     func();
-  }, []);
+  }, [searchString]);
 
   const socket = io(BASE_URL, {
     auth: {
@@ -53,8 +65,8 @@ export const LogsContextProvider = ({ children }) => {
         setLogs,
         filterLogs,
         loadLogs,
-        searchQuery,
-        setSearchQuery,
+        searchString,
+        setSearchString,
       }}
     >
       {children}

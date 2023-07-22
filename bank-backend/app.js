@@ -608,17 +608,23 @@ app.post("/logs/filter", async (req, res) => {
   try {
     const searchQuery = req.body.searchString;
     const regex = new RegExp(searchQuery, "i");
-    const data = await TransactionLogs.find({
-      $or: [
-        { "meta.accountNumber": regex },
-        { "meta.transactionId": regex },
-        { "meta.amount": { $gte: +searchQuery } },
-        { "meta.status": regex },
-        { "meta.type": regex },
-        { "meta.timestamp": { $gte: new Date(searchQuery) } },
-        { "meta.description": regex },
-      ],
-    }).toArray();
+    const isValidDate = !isNaN(Date.parse(searchQuery));
+    const data = await TransactionLogs.find(
+      isValidDate
+        ? { "meta.timestamp": { $gte: new Date(searchQuery) } }
+        : {
+            $or: [
+              { "meta.accountNumber": regex },
+              {
+                $where: `function() {return this.meta.transactionId.toString().match(/${+searchQuery}/) != null;}`,
+              },
+              { "meta.amount": { $gte: +searchQuery } },
+              { "meta.status": regex },
+              { "meta.type": regex },
+              { "meta.description": regex },
+            ],
+          }
+    ).toArray();
     res.json({ success: true, count: data.length, data });
   } catch (error) {
     res.json({ success: false, error: error.stack });

@@ -14,6 +14,8 @@ const AccountInfo = () => {
         method: "POST",
         headers: {
           "Content-Type": "Application/json",
+          Cookie:
+            "connect.sid=s%3AmxhS0ZH7ysCsWZosCWZky0oPdoNqx8YK.YvmzGph0I%2F2cGWzZ2VDmuPgnNGkgj9iIcgrU8Z6LpZ8",
         },
         body: JSON.stringify({
           pin: "1234",
