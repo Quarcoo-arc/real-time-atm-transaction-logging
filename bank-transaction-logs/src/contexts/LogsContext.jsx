@@ -22,6 +22,9 @@ export const LogsContextProvider = ({ children }) => {
   const filterLogs = async () => {
     try {
       const result = await fetch(`${BASE_URL}/logs/filter`, {
+        headers: {
+          "Content-Type": "Application/json",
+        },
         method: "POST",
         body: JSON.stringify({
           searchString,
@@ -36,10 +39,14 @@ export const LogsContextProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    const func = async () =>
-      searchString ? await filterLogs() : await loadLogs();
+    const func = async () => await filterLogs();
     func();
   }, [searchString]);
+
+  useEffect(() => {
+    const func = async () => await loadLogs();
+    func();
+  }, []);
 
   const socket = io(BASE_URL, {
     auth: {
