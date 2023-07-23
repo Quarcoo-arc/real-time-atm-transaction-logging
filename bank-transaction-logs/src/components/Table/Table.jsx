@@ -92,7 +92,6 @@ export default function StickyHeadTable() {
   };
 
   useEffect(() => {
-    logs.forEach((log) => console.log(log.timestamp));
     const newData = logs.map((log) =>
       createData(
         log.meta.timestamp,
@@ -104,7 +103,7 @@ export default function StickyHeadTable() {
       )
     );
     setData(newData);
-  }, [logs]);
+  }, [JSON.stringify(logs)]);
 
   return (
     <Paper

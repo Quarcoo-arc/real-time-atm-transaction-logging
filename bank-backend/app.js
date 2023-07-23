@@ -70,14 +70,9 @@ app.use(
     secret: process.env.SESSION_COOKIE_SECRET,
     saveUninitialized: false,
     resave: false,
-    cookie: {
-      maxAge: SESSOIN_COOKIE_MAX_AGE_IN_MS,
-      secure: true,
-      sameSite: "none",
-      httpOnly: true,
-    },
     store: MongoStore.create({
       mongoUrl: process.env.mongodburl,
+      ttl: SESSOIN_COOKIE_MAX_AGE_IN_MS,
     }),
   })
 );

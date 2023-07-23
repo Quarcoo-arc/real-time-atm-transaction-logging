@@ -8,6 +8,7 @@ const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 export const LogsContextProvider = ({ children }) => {
   const [logs, setLogs] = useState([]);
   const [searchString, setSearchString] = useState("");
+  const [newLogs, setNewLogs] = useState([]);
 
   const loadLogs = async () => {
     try {
@@ -32,7 +33,6 @@ export const LogsContextProvider = ({ children }) => {
       });
       const data = await result.json();
       setLogs(data.data);
-      console.log(data.data);
     } catch (error) {
       console.log(error);
     }
@@ -48,22 +48,36 @@ export const LogsContextProvider = ({ children }) => {
     func();
   }, []);
 
-  const socket = io(BASE_URL, {
-    auth: {
-      token: "json-web-token",
-    },
-    transports: ["websocket"],
-  });
-  socket.on("connect", function () {
-    console.log("Made socket connection", socket.id);
-  });
-  socket.on("transaction", (msg) => console.log(msg));
-  socket.on("disconnect", function () {
-    console.log("disconnect");
-  });
-  socket.on("connect_error", function (err) {
-    console.log("connection errror", err);
-  });
+  useEffect(() => {
+    if (!searchString && newLogs) {
+      setLogs((prev) => [...newLogs, ...prev]);
+      console.log(newLogs);
+      setNewLogs([]);
+    }
+  }, [JSON.stringify(newLogs), searchString]);
+
+  useEffect(() => {
+    const socket = io(BASE_URL, {
+      auth: {
+        token: "json-web-token",
+      },
+      transports: ["websocket"],
+    });
+    socket.on("connect", function () {
+      console.log("Made socket connection", socket.id);
+    });
+    socket.once("transaction", (msg) => {
+      !logs || msg.transactionId !== logs[0].meta.transactionId
+        ? setNewLogs((prev) => [{ meta: msg }, ...prev])
+        : none;
+    });
+    socket.on("disconnect", function () {
+      console.log("disconnect");
+    });
+    socket.on("connect_error", function (err) {
+      console.log("connection errror", err);
+    });
+  }, []);
 
   return (
     <LogsContext.Provider
