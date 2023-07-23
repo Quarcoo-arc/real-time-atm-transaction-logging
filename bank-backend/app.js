@@ -70,9 +70,14 @@ app.use(
     secret: process.env.SESSION_COOKIE_SECRET,
     saveUninitialized: false,
     resave: false,
+    cookie: {
+      maxAge: SESSOIN_COOKIE_MAX_AGE_IN_MS,
+      secure: true,
+      sameSite: "none",
+      httpOnly: true,
+    },
     store: MongoStore.create({
       mongoUrl: process.env.mongodburl,
-      ttl: SESSOIN_COOKIE_MAX_AGE_IN_MS,
     }),
   })
 );
@@ -597,7 +602,9 @@ app.post("/atm-balance", async (req, res) => {
 
 app.get("/logs", async (req, res) => {
   try {
-    const data = await TransactionLogs.find({}).toArray();
+    const data = await TransactionLogs.find({})
+      .sort({ "meta.timestamp": -1 })
+      .toArray();
     res.json({ success: true, count: data.length, data });
   } catch (error) {
     res.json({ success: false, error: error.stack });
@@ -624,7 +631,9 @@ app.post("/logs/filter", async (req, res) => {
               { "meta.description": regex },
             ],
           }
-    ).toArray();
+    )
+      .sort({ "meta.timestamp": -1 })
+      .toArray();
     res.json({ success: true, count: data.length, data });
   } catch (error) {
     res.json({ success: false, error: error.stack });
