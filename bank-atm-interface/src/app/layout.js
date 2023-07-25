@@ -1,6 +1,10 @@
+"use client";
 import "./globals.css";
 import { Poppins, Dancing_Script } from "next/font/google";
 import { Logo } from "@/components";
+import { CookiesContextProvider } from "./CookiesContext";
+import store from "./store";
+import { Provider } from "react-redux";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -28,8 +32,12 @@ export default function RootLayout({ children }) {
         className={`${poppins.variable} ${dancing_script.variable}`}
         suppressHydrationWarning={true}
       >
-        <Logo />
-        {children}
+        <Provider store={store}>
+          <CookiesContextProvider>
+            <Logo />
+            {children}
+          </CookiesContextProvider>
+        </Provider>
       </body>
     </html>
   );

@@ -1,31 +1,40 @@
 "use client";
+import CookiesContext from "@/app/CookiesContext";
 import {
   Grid,
   GridWrapper,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
 import { SubPage } from "@/sharedPages";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 
 const AccountInfo = () => {
-  useEffect(async () => {
-    const fetchData = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/account-info`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "Application/json",
-          Cookie:
-            "connect.sid=s%3AmxhS0ZH7ysCsWZosCWZky0oPdoNqx8YK.YvmzGph0I%2F2cGWzZ2VDmuPgnNGkgj9iIcgrU8Z6LpZ8",
-        },
-        body: JSON.stringify({
-          pin: "1234",
-        }),
+  const { setAllCookies } = useContext(CookiesContext);
+  setAllCookies();
+  useEffect(() => {
+    const func = async () => {
+      try {
+        const fetchData = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/account-info`,
+          {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              pin: "1234",
+            }),
+          }
+        );
+
+        const data = await fetchData.json();
+
+        console.log(data);
+      } catch (error) {
+        console.log(error);
       }
-    );
-
-    const data = await fetchData.json();
-
-    console.log(data);
+    };
+    func();
   }, []);
 
   return (

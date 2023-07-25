@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useContext } from "react";
 import { AuthPage } from "@/sharedPages";
 import loginImg from "../../../public/login_img.jpg";
 import { FormButton, Heading, OutlinedTextField } from "@/components";
@@ -10,8 +10,11 @@ import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { Wrapper } from "./page.styled";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
+import CookiesContext from "../CookiesContext";
 
 const Login = () => {
+  const { setCookies } = useContext(CookiesContext);
   const router = useRouter();
   const validationSchema = yup.object({
     email: yup
@@ -46,6 +49,7 @@ const Login = () => {
       );
       const data = await result.json();
       if (data.success) {
+        setCookies(Cookies.get());
         router.push("/atm");
       }
     },

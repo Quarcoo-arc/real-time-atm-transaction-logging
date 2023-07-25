@@ -37,7 +37,12 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: true,
+  })
+);
 app.use(bodyParser.json());
 
 passport.serializeUser((user, cb) => cb(null, user));
@@ -415,6 +420,7 @@ app.post("/account-balance", ensureLoggedIn, checkPIN, async (req, res) => {
 app.post("/account-info", ensureLoggedIn, checkPIN, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
+
     res.json({
       success: true,
       data: {

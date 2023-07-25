@@ -51,7 +51,6 @@ export const LogsContextProvider = ({ children }) => {
   useEffect(() => {
     if (!searchString && newLogs) {
       setLogs((prev) => [...newLogs, ...prev]);
-      console.log(newLogs);
       setNewLogs([]);
     }
   }, [JSON.stringify(newLogs), searchString]);
