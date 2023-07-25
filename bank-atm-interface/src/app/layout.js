@@ -2,9 +2,7 @@
 import "./globals.css";
 import { Poppins, Dancing_Script } from "next/font/google";
 import { Logo } from "@/components";
-import { CookiesContextProvider } from "./CookiesContext";
-import store from "./store";
-import { Provider } from "react-redux";
+import { UserContextProvider } from "./UserContext";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -32,12 +30,10 @@ export default function RootLayout({ children }) {
         className={`${poppins.variable} ${dancing_script.variable}`}
         suppressHydrationWarning={true}
       >
-        <Provider store={store}>
-          <CookiesContextProvider>
-            <Logo />
-            {children}
-          </CookiesContextProvider>
-        </Provider>
+        <UserContextProvider>
+          <Logo />
+          {children}
+        </UserContextProvider>
       </body>
     </html>
   );

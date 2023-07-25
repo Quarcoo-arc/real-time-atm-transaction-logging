@@ -218,7 +218,7 @@ app.post("/signup", async (req, res, next) => {
       email: req.body.email,
       password: req.body.password,
       name: req.body.name,
-      pin: req.body.pin, // TODO: Check to make sure pin is 4 digits
+      pin: req.body.pin,
     });
 
     const result = await user.save();

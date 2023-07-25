@@ -10,11 +10,10 @@ import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { Wrapper } from "./page.styled";
 import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import CookiesContext from "../CookiesContext";
+import UserContext from "../UserContext";
 
 const Login = () => {
-  const { setCookies } = useContext(CookiesContext);
+  const { loginUserHandler } = useContext(UserContext);
   const router = useRouter();
   const validationSchema = yup.object({
     email: yup
@@ -34,22 +33,12 @@ const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
-      const result = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/login`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-          body: JSON.stringify({
-            email: values.email,
-            password: values.password,
-          }),
-        }
-      );
-      const data = await result.json();
-      if (data.success) {
-        setCookies(Cookies.get());
+      const result = await loginUserHandler({
+        email: values.email,
+        password: values.password,
+      });
+
+      if (result.success) {
         router.push("/atm");
       }
     },

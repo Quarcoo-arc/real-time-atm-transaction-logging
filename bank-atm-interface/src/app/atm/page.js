@@ -9,8 +9,6 @@ import depositMoneyIcon from "../../../public/deposit_money.svg";
 import accountInfoIcon from "../../../public/account_info.svg";
 import changePINIcon from "../../../public/change_pin.svg";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
 
 const cardsContentArr = [
   {
@@ -54,13 +52,11 @@ const cardsContentArr = [
 ];
 
 const ATMHome = () => {
-  const router = useRouter();
-  const user = useSelector((state) => state.user);
   const [openDialogue, setOpenDialogue] = useState(false);
   return (
     <ContentWrapper>
       <Background />
-      <Heading>Hi {user.name.split(" ")[0]}!</Heading>
+      <Heading>Hi Michael!</Heading>
       <Heading type="sub">Please select a transaction</Heading>
       <CardsWrapper>
         {cardsContentArr.map((el, idx) => (

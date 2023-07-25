@@ -1,15 +1,12 @@
 "use client";
-import CookiesContext from "@/app/CookiesContext";
 import {
   Grid,
   GridWrapper,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
 import { SubPage } from "@/sharedPages";
-import React, { useContext, useEffect } from "react";
+import React, { useEffect } from "react";
 
 const AccountInfo = () => {
-  const { setAllCookies } = useContext(CookiesContext);
-  setAllCookies();
   useEffect(() => {
     const func = async () => {
       try {
