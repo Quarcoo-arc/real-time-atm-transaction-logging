@@ -10,6 +10,7 @@ const {
   NO_ERROR,
   TransactionLogs,
 } = require("./models.js");
+const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bodyParser = require("body-parser");
@@ -17,6 +18,7 @@ const nodemailer = require("nodemailer");
 const express = require("express");
 const validator = require("email-validator");
 const cors = require("cors");
+const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
 const { format, transports, createLogger } = require("winston");
 require("winston-mongodb");
 
@@ -24,18 +26,22 @@ require("dotenv").config();
 
 const ensureLogIn = connect_ensure_login.ensureLoggedIn;
 
-const ensureLoggedIn = ensureLogIn();
+const ensureLoggedIn = passport.authenticate("jwt", { session: false });
 
 const app = express();
 
 const port = 5000;
 
-const SESSOIN_COOKIE_MAX_AGE_IN_MS = 5 * 60 * 1000; // 5 minutes
-
 const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+
+const options = {};
+options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
+options.secretOrKey = process.env.JWT_SECRET;
+options.issuer = process.env.JWT_ISSUER;
+options.audience = process.env.JWT_AUDIENCE;
 
 app.use(
   cors({
@@ -54,35 +60,39 @@ passport.use(
       usernameField: "email",
     },
     async (email, password, cb) => {
-      const user = await User.findOne({ email }).exec();
-      const isAuthenticated = user
-        ? await user.verifyPasswordSync(password, user.password)
-        : false;
-      cb(
-        null,
-        isAuthenticated
-          ? { id: user._id, email: user.email, name: user.name }
-          : false
-      );
+      try {
+        const user = await User.findOne({ email }).exec();
+        const isAuthenticated = user
+          ? await user.verifyPasswordSync(password, user.password)
+          : false;
+        cb(
+          null,
+          isAuthenticated
+            ? { id: user._id, email: user.email, name: user.name }
+            : false,
+          { message: "Invalid username or password" }
+        );
+      } catch (error) {
+        return cb(error);
+      }
     }
   )
 );
 
-app.use(passport.initialize());
-
-app.use(
-  session({
-    secret: process.env.SESSION_COOKIE_SECRET,
-    saveUninitialized: false,
-    resave: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.mongodburl,
-      ttl: SESSOIN_COOKIE_MAX_AGE_IN_MS,
-    }),
+passport.use(
+  new JwtStrategy(options, async (jwtPayload, done) => {
+    try {
+      const user = await User.findById(jwtPayload.id);
+      return user
+        ? done(null, user)
+        : done(null, false, { message: "User not found" });
+    } catch (error) {
+      return done(error);
+    }
   })
 );
 
-app.use(passport.authenticate("session"));
+app.use(passport.initialize());
 
 const checkPIN = async (req, res, next) => {
   try {
@@ -172,13 +182,33 @@ app.get("/", (req, res) => {
 
 app.post(
   "/login",
-  passport.authenticate("local", { failureMessage: true }),
-  (req, res) => {
-    res.send({
-      success: true,
-      message: `${req.user.name}, you have been logged in successfully`,
-    });
-    // TODO: Send email upon login
+  passport.authenticate("local", { session: false }),
+  (req, res, next) => {
+    try {
+      if (!req.user) {
+        return res
+          .status(401)
+          .json({ success: false, message: "Login failed" });
+      }
+
+      const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
+        expiresIn: 1000000,
+        issuer: options.issuer,
+        audience: options.audience,
+      });
+      return res.json({
+        success: true,
+        message: `${req.user.name}, you have been logged in successfully`,
+        token,
+      });
+
+      // TODO: Send email upon login
+    } catch (error) {
+      res.json({
+        success: false,
+        error,
+      });
+    }
   }
 );
 
@@ -193,7 +223,13 @@ app.post("/signup", async (req, res, next) => {
 
     const result = await user.save();
 
-    res.send({ success: true, data: result });
+    const token = jwt.sign({ id: result.id }, process.env.JWT_SECRET, {
+      expiresIn: 1000000,
+      issuer: options.issuer,
+      audience: options.audience,
+    });
+
+    res.send({ success: true, data: result, token });
     // TODO: Send email upon successful account creation
   } catch (error) {
     res.send({
