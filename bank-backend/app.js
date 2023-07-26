@@ -433,7 +433,7 @@ app.post("/account-balance", ensureLoggedIn, checkPIN, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     res.json({
-      succes: true,
+      success: true,
       data: {
         accountBalance: user.accountBalance,
       },

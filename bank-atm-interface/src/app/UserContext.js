@@ -33,9 +33,23 @@ export const UserContextProvider = ({ children }) => {
       return { success: false };
     }
   };
+
+  const currencyFormatter = (amount) => {
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "GHS",
+    });
+    return formatter.format(+amount);
+  };
   return (
     <UserContext.Provider
-      value={{ loginUserHandler, authToken, postDataHandler, user }}
+      value={{
+        loginUserHandler,
+        authToken,
+        postDataHandler,
+        user,
+        currencyFormatter,
+      }}
     >
       {children}
     </UserContext.Provider>

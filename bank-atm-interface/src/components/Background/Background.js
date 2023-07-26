@@ -6,7 +6,7 @@ import Image from "next/image";
 const Background = () => {
   return (
     <BackgroundWrapper>
-      <Image src={backgroundImg} alt="" />
+      <Image src={backgroundImg} alt="" priority={true} />
     </BackgroundWrapper>
   );
 };

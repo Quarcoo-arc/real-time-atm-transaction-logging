@@ -8,7 +8,7 @@ import { SubPage } from "@/sharedPages";
 import React, { useContext, useEffect, useState } from "react";
 
 const AccountInfo = () => {
-  const { postDataHandler } = useContext(UserContext);
+  const { postDataHandler, currencyFormatter } = useContext(UserContext);
   const [userInfo, setUserInfo] = useState({});
   useEffect(() => {
     const func = async () => {
@@ -24,7 +24,6 @@ const AccountInfo = () => {
         } else {
           // TODO: Display modal with retry functionality
         }
-        console.log(result);
       } catch (error) {
         console.log(error);
       }
@@ -39,7 +38,7 @@ const AccountInfo = () => {
         <Grid title="Account Name:" value={userInfo.name} />
         <Grid
           title="Account Balance:"
-          value={`GH₵ ${userInfo.accountBalance}`}
+          value={currencyFormatter(userInfo.accountBalance)}
         />
         <Grid title="Email:" value={userInfo.email} />
       </GridWrapper>
