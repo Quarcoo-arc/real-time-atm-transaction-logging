@@ -9,6 +9,7 @@ import depositMoneyIcon from "../../../public/deposit_money.svg";
 import accountInfoIcon from "../../../public/account_info.svg";
 import changePINIcon from "../../../public/change_pin.svg";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 const cardsContentArr = [
   {
@@ -53,6 +54,7 @@ const cardsContentArr = [
 
 const ATMHome = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
+  const router = useRouter();
   return (
     <ContentWrapper>
       <Background />

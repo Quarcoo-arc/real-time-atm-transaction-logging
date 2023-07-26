@@ -6,7 +6,7 @@ const UserContext = createContext();
 
 export const UserContextProvider = ({ children }) => {
   const [authToken, setAuthToken] = useSessionStorage("token", "");
-
+  const [user, setUser] = useSessionStorage("user", {});
   const postDataHandler = async (url, payload) => {
     const result = await fetch(url, {
       headers: {
@@ -27,6 +27,7 @@ export const UserContextProvider = ({ children }) => {
     );
     if (result.success) {
       setAuthToken(result.token);
+      setUser(result.data);
       return { success: true };
     } else {
       return { success: false };
@@ -34,7 +35,7 @@ export const UserContextProvider = ({ children }) => {
   };
   return (
     <UserContext.Provider
-      value={{ loginUserHandler, authToken, postDataHandler }}
+      value={{ loginUserHandler, authToken, postDataHandler, user }}
     >
       {children}
     </UserContext.Provider>

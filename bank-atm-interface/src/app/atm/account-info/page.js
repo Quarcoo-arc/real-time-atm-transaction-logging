@@ -1,32 +1,30 @@
 "use client";
+import UserContext from "@/app/UserContext";
 import {
   Grid,
   GridWrapper,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
 import { SubPage } from "@/sharedPages";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 const AccountInfo = () => {
+  const { postDataHandler } = useContext(UserContext);
+  const [userInfo, setUserInfo] = useState({});
   useEffect(() => {
     const func = async () => {
       try {
-        const fetchData = await fetch(
+        const result = await postDataHandler(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/account-info`,
           {
-            method: "POST",
-            credentials: "include",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              pin: "1234",
-            }),
+            pin: "1234",
           }
         );
-
-        const data = await fetchData.json();
-
-        console.log(data);
+        if (result.success) {
+          setUserInfo(result.data);
+        } else {
+          // TODO: Display modal with retry functionality
+        }
+        console.log(result);
       } catch (error) {
         console.log(error);
       }
@@ -37,10 +35,13 @@ const AccountInfo = () => {
   return (
     <SubPage subHeading="Here are your account details!" buttons={true}>
       <GridWrapper>
-        <Grid title="Account Number:" value="0000000002" />
-        <Grid title="Account Name:" value="Michael Quarcoo" />
-        <Grid title="Account Balance:" value="GH₵ 120,000.00" />
-        <Grid title="Email:" value="michaelquarcoo04@gmail.com" />
+        <Grid title="Account Number:" value={userInfo.accountNumber} />
+        <Grid title="Account Name:" value={userInfo.name} />
+        <Grid
+          title="Account Balance:"
+          value={`GH₵ ${userInfo.accountBalance}`}
+        />
+        <Grid title="Email:" value={userInfo.email} />
       </GridWrapper>
     </SubPage>
   );

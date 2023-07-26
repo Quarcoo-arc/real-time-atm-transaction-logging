@@ -1,6 +1,3 @@
-const session = require("express-session");
-const connect_ensure_login = require("connect-ensure-login");
-const MongoStore = require("connect-mongo");
 const {
   db,
   User,
@@ -23,8 +20,6 @@ const { format, transports, createLogger } = require("winston");
 require("winston-mongodb");
 
 require("dotenv").config();
-
-const ensureLogIn = connect_ensure_login.ensureLoggedIn;
 
 const ensureLoggedIn = passport.authenticate("jwt", { session: false });
 
@@ -183,13 +178,15 @@ app.get("/", (req, res) => {
 app.post(
   "/login",
   passport.authenticate("local", { session: false }),
-  (req, res, next) => {
+  async (req, res, next) => {
     try {
       if (!req.user) {
         return res
           .status(401)
           .json({ success: false, message: "Login failed" });
       }
+
+      const user = await User.findById(req.user.id).exec();
 
       const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
         expiresIn: 1000000,
@@ -198,6 +195,7 @@ app.post(
       });
       return res.json({
         success: true,
+        data: { name: user.name, email: user.email },
         message: `${req.user.name}, you have been logged in successfully`,
         token,
       });
@@ -241,11 +239,6 @@ app.post("/signup", async (req, res, next) => {
 });
 
 app.post("/deposit", ensureLoggedIn, checkPIN, async (req, res) => {
-  /** TODO:   *
-   * Transactions should be logged unto bank-atm-interface in real time
-   *
-   *
-   */
   try {
     if (!req.body || !req.body.amount || isNaN(req.body.amount)) {
       res.status(400);
