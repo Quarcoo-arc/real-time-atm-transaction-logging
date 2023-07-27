@@ -5,9 +5,12 @@ import IconButton from "@mui/material/IconButton";
 import AccountCircleRoundedIcon from "@mui/icons-material/AccountCircleRounded";
 import LogoutRoundedIcon from "@mui/icons-material/LogoutRounded";
 import { Email, LogoutWrapper, UserInfo, Wrapper } from "./UserIcon.styled";
+import { useUser } from "@/app/UserContext";
 
 const UserIcon = ({ name, email }) => {
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const { logoutHandler } = useUser();
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -63,7 +66,7 @@ const UserIcon = ({ name, email }) => {
             <Email>{email}</Email>
           </div>
         </UserInfo>
-        <LogoutWrapper>
+        <LogoutWrapper onClick={() => logoutHandler()}>
           <LogoutRoundedIcon sx={{ fontSize: "1.5rem" }} />
           Logout
         </LogoutWrapper>

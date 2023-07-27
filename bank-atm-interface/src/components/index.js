@@ -10,6 +10,7 @@ import Card from "./Card/Card";
 import Background from "./Background/Background";
 import ConfirmLogutPopUp from "./ConfirmLogoutPopUp/ConfirmLogutPopUp";
 import AmountEntryTextField from "./AmountEntryTextField/AmountEntryTextField";
+import AlertToast from "./AlertToast/AlertToast";
 
 export {
   Logo,
@@ -24,4 +25,5 @@ export {
   Background,
   ConfirmLogutPopUp,
   AmountEntryTextField,
+  AlertToast,
 };

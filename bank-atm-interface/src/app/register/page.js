@@ -10,10 +10,16 @@ import * as yup from "yup";
 import { useFormik } from "formik";
 import Link from "next/link";
 import { BackComponent } from "./page.styled";
+import { useUser } from "../UserContext";
+import { useRouter } from "next/navigation";
 
 const SignUp = () => {
   const [userInfo, setUserInfo] = useState({});
   const [secondForm, setSecondForm] = useState(false);
+  const [displayAlert, setDisplayAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const { registerUserHandler } = useUser();
+  const router = useRouter();
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")
@@ -42,7 +48,6 @@ const SignUp = () => {
         password: values.password,
       }));
       setSecondForm(true);
-      console.log(values);
     },
   });
 
@@ -66,18 +71,30 @@ const SignUp = () => {
       confirm_atm_pin: "",
     },
     validationSchema: secondValidationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setUserInfo((prev) => ({
         ...prev,
         name: values.name,
         atm_pin: values.atm_pin,
       }));
-      console.log(values);
-      console.log(userInfo);
+      const result = await registerUserHandler(userInfo);
+
+      if (result.success) {
+        router.push("/register/success");
+      } else {
+        setDisplayAlert(true);
+        setErrorMessage(result.message);
+      }
     },
   });
   return (
-    <AuthPage btnType="login" src={registerImg}>
+    <AuthPage
+      btnType="login"
+      src={registerImg}
+      setOpenSnackBar={setDisplayAlert}
+      alertMessage={errorMessage}
+      openSnackBar={displayAlert}
+    >
       <ContentWrapper>
         <div>
           <Heading>Welcome to Bank!</Heading>

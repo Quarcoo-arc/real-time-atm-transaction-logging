@@ -1,14 +1,28 @@
-import React from "react";
-import { AuthButton, SideImage, UserIcon } from "@/components";
+import React, { useState } from "react";
+import { AlertToast, AuthButton, SideImage, UserIcon } from "@/components";
 import { ContentWrapper, FlexWrapper } from "./AuthPage.styled";
+import { useUser } from "@/app/UserContext";
 
-const AuthPage = ({ src, btnType, children }) => {
+const AuthPage = ({
+  src,
+  btnType,
+  openSnackBar = false,
+  setOpenSnackBar,
+  alertMessage = "",
+  children,
+}) => {
+  const { user } = useUser();
   return (
     <div>
-      {btnType ? (
+      <AlertToast
+        message={alertMessage}
+        open={openSnackBar}
+        setOpen={setOpenSnackBar}
+      />
+      {!(user && user.name) ? (
         <AuthButton type={btnType} />
       ) : (
-        <UserIcon name="Michael Quarcoo" email="michaelquarcoo04@gmail.com" />
+        <UserIcon name={user.name} email={user.email} />
       )}
       <FlexWrapper>
         <ContentWrapper>{children}</ContentWrapper>
