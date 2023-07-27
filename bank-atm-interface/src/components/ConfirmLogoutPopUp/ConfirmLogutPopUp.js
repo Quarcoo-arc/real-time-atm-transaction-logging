@@ -2,10 +2,10 @@
 import React from "react";
 import DialogueBox from "../DialogueBox/DialogueBox";
 import { FilledButton } from "../Buttons/Buttons";
-import { useRouter } from "next/navigation";
+import { useUser } from "@/app/UserContext";
 
 const ConfirmLogutPopUp = ({ open, setOpen }) => {
-  const router = useRouter();
+  const { logoutHandler } = useUser();
   return (
     <DialogueBox
       open={open}
@@ -15,10 +15,9 @@ const ConfirmLogutPopUp = ({ open, setOpen }) => {
       footer={
         <>
           <FilledButton onClick={() => setOpen(false)}>No</FilledButton>
-          <FilledButton type="warning" onClick={() => router.push("/")}>
+          <FilledButton type="warning" onClick={logoutHandler}>
             Yes
           </FilledButton>
-          {/**Todo: Change callback function */}
         </>
       }
     />

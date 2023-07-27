@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Background, Card, ConfirmLogutPopUp, Heading } from "@/components";
 import { CardsWrapper, ContentWrapper } from "./page.styled";
 import { LogoutRounded } from "@mui/icons-material";
@@ -56,11 +56,16 @@ const cardsContentArr = [
 const ATMHome = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
   const router = useRouter();
-  const { user } = useContext(UserContext);
+  const { user, checkAuth } = useContext(UserContext);
+
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   return (
     <ContentWrapper>
       <Background />
-      <Heading>Hi {user.name.split(" ")[0]}!</Heading>
+      <Heading>Hi {user.name?.split(" ")[0]}!</Heading>
       <Heading type="sub">Please select a transaction</Heading>
       <CardsWrapper>
         {cardsContentArr.map((el, idx) => (

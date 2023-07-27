@@ -1,5 +1,5 @@
 "use client";
-import React, { useContext } from "react";
+import React from "react";
 import { AuthPage } from "@/sharedPages";
 import loginImg from "../../../public/login_img.jpg";
 import { FormButton, Heading, OutlinedTextField } from "@/components";
@@ -10,10 +10,10 @@ import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { Wrapper } from "./page.styled";
 import { useRouter } from "next/navigation";
-import UserContext from "../UserContext";
+import { useUser } from "../UserContext";
 
 const Login = () => {
-  const { loginUserHandler } = useContext(UserContext);
+  const { loginUserHandler } = useUser();
   const router = useRouter();
   const validationSchema = yup.object({
     email: yup

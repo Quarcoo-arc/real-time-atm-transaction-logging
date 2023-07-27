@@ -17,7 +17,6 @@ const AccountBalance = () => {
           }
         );
         if (result.success) {
-          console.log("We are here!");
           setAccountBalance(result.data.accountBalance);
         } else {
           // TODO: Display modal with retry functionality

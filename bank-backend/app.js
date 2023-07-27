@@ -513,6 +513,10 @@ app.post("/verify-pin", ensureLoggedIn, checkPIN, (req, res) => {
   res.json({ success: true, message: "PIN verified" });
 });
 
+app.get("/verify-token", ensureLoggedIn, (req, res) => {
+  res.json({ success: true, message: "Token is valid" });
+});
+
 app.get("/active-staff", async (req, res) => {
   try {
     const globalInfo = await Global.findById("globalVars").exec();

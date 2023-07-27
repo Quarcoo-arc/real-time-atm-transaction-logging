@@ -1,8 +1,9 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import SubPage from "../SubPage/SubPage";
 import { MuiOtpInput } from "mui-one-time-password-input";
 import { ContentWrapper } from "./PinEntryPage.styled";
+import { useUser } from "@/app/UserContext";
 
 /**
  *
@@ -15,6 +16,10 @@ import { ContentWrapper } from "./PinEntryPage.styled";
  */
 
 const PinEntryPage = ({ heading, otp, setOtp, onComplete }) => {
+  const { checkAuth } = useUser();
+  useEffect(() => {
+    checkAuth();
+  }, []);
   const matchIsNumeric = (text) => {
     const isNumber = typeof text === "number";
     const isString = typeof text === "string";
