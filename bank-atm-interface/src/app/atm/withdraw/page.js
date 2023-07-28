@@ -1,16 +1,54 @@
 "use client";
+import { useUser } from "@/app/UserContext";
 import { AmountEntryTextField, FormButton } from "@/components";
 import { WrapAndCenter } from "@/components/Wrappers";
 import { SubPage } from "@/sharedPages";
 import { Box } from "@mui/material";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const WithdrawMoney = () => {
   const [amount, setAmount] = useState("");
+  const { checkPINEntry, setPin, pin, postDataHandler, setWithdrawalInfo } =
+    useUser();
+  const router = useRouter();
 
-  const submitHandler = (e) => {
+  useEffect(() => {
+    checkPINEntry();
+    return () => {
+      setPin("");
+    };
+  }, []);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    amount ? alert("Withdrawing...") : alert("Please enter an amount");
+    if (amount) {
+      try {
+        const result = await postDataHandler(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/withdraw`,
+          {
+            pin,
+            amount: +amount,
+          }
+        );
+        console.log(result);
+
+        if (result.success) {
+          setWithdrawalInfo({
+            success: true,
+            amount,
+            currentBalance: result.data.currentBalance,
+          });
+          router.push("/atm/withdraw/success");
+        } else {
+          setWithdrawalInfo({
+            success: false,
+            error: result.error,
+          });
+          router.push("/atm/withdraw/error");
+        }
+      } catch (error) {}
+    }
   };
 
   return (

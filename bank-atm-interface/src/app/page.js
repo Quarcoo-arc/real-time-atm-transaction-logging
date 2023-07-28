@@ -1,5 +1,5 @@
 "use client";
-import { AuthButton } from "@/components";
+import { AuthButton, UserIcon } from "@/components";
 import {
   ContentWrapper,
   ImageWrapper,
@@ -10,12 +10,19 @@ import {
 import { Button } from "@mui/material";
 import susuBox from "../../public/susu_box.svg";
 import { useRouter } from "next/navigation";
+import { useUser } from "./UserContext";
 
 export default function Home() {
   const router = useRouter();
+  const { user } = useUser();
   return (
     <main>
-      <AuthButton type="login" />
+      {user ? (
+        <UserIcon email={user.email} name={user.name} />
+      ) : (
+        <AuthButton type="login" />
+      )}
+
       <ContentWrapper>
         <TextWrapper>
           <UpperCaseText>

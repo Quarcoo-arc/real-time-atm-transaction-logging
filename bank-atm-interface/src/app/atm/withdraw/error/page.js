@@ -1,14 +1,32 @@
 "use client";
 import { SubPage } from "@/sharedPages";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   GridWrapper,
   PageInfoText,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
+import { useUser } from "@/app/UserContext";
 
-const WithdrawalSuccess = () => {
+const WithdrawalError = () => {
   const [error, setError] = useState("");
+  const { withdrawalInfo, setWithdrawalInfo } = useUser();
+
+  useEffect(() => {
+    if (!withdrawalInfo || withdrawalInfo.success) {
+      router.push("/atm");
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(withdrawalInfo);
+    !withdrawalInfo.success && setError(withdrawalInfo.error);
+
+    return () => {
+      setWithdrawalInfo({});
+    };
+  }, []);
+
   return (
     <SubPage
       heading="Transaction Failed"
@@ -40,4 +58,4 @@ const WithdrawalSuccess = () => {
   );
 };
 
-export default WithdrawalSuccess;
+export default WithdrawalError;

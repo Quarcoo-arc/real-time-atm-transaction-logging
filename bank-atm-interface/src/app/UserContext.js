@@ -12,6 +12,7 @@ export const UserContextProvider = ({ children }) => {
   const [pin, setPin] = useState("");
   const [newPin, setNewPin] = useState("");
   const [oldPin, setOldPin] = useState("");
+  const [withdrawalInfo, setWithdrawalInfo] = useState({});
 
   const router = useRouter();
   const pathname = usePathname();
@@ -133,6 +134,8 @@ export const UserContextProvider = ({ children }) => {
         setNewPin,
         oldPin,
         setOldPin,
+        withdrawalInfo,
+        setWithdrawalInfo,
       }}
     >
       {children}

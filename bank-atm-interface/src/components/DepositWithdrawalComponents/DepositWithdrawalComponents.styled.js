@@ -57,6 +57,7 @@ const InfoText = styled.p`
   font-weight: 500;
   text-align: center;
   width: 70%;
+  margin: 0 auto;
   span {
     color: #e6e6e6;
     font-weight: 700;
