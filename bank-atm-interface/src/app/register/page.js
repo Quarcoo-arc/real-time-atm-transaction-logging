@@ -83,7 +83,9 @@ const SignUp = () => {
         router.push("/register/success");
       } else {
         setDisplayAlert(true);
-        setErrorMessage(result.message);
+        setErrorMessage(
+          result.message ? result.message : "Something went wrong."
+        );
       }
     },
   });

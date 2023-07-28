@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { AuthPage } from "@/sharedPages";
 import loginImg from "../../../public/login_img.jpg";
 import { FormButton, Heading, OutlinedTextField } from "@/components";
@@ -13,6 +13,8 @@ import { useRouter } from "next/navigation";
 import { useUser } from "../UserContext";
 
 const Login = () => {
+  const [displayAlert, setDisplayAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { loginUserHandler } = useUser();
   const router = useRouter();
   const validationSchema = yup.object({
@@ -40,12 +42,27 @@ const Login = () => {
 
       if (result.success) {
         router.push("/atm");
+      } else {
+        setDisplayAlert(true);
+        setErrorMessage(
+          result.message
+            ? result.message
+            : result.error
+            ? result.error
+            : "Something went wrong!"
+        );
       }
     },
   });
 
   return (
-    <AuthPage btnType="register" src={loginImg}>
+    <AuthPage
+      btnType="register"
+      src={loginImg}
+      setOpenSnackBar={setDisplayAlert}
+      alertMessage={errorMessage}
+      openSnackBar={displayAlert}
+    >
       <ContentWrapper>
         <div>
           <Heading>Welcome to Bank!</Heading>

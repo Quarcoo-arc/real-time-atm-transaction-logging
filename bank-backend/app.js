@@ -21,8 +21,6 @@ require("winston-mongodb");
 
 require("dotenv").config();
 
-const ensureLoggedIn = passport.authenticate("jwt", { session: false });
-
 const app = express();
 
 const port = 5000;
@@ -88,6 +86,35 @@ passport.use(
 );
 
 app.use(passport.initialize());
+
+const authenticateJWT = (req, res, next) => {
+  passport.authenticate("jwt", { session: false }, (err, user) => {
+    if (err || !user) {
+      return res
+        .status(401)
+        .json({ error: "Unauthorized", message: "Authentication failed." });
+    }
+    req.user = user;
+    return next();
+  })(req, res, next);
+};
+
+const ensureLoggedIn = authenticateJWT;
+
+const authenticateLocal = (req, res, next) => {
+  passport.authenticate("local", { session: false }, (err, user) => {
+    if (err || !user) {
+      return res
+        .status(401)
+        .json({
+          error: "Unauthorized",
+          message: "Incorrect username or password.",
+        });
+    }
+    req.user = user;
+    return next();
+  })(req, res, next);
+};
 
 const checkPIN = async (req, res, next) => {
   try {
@@ -175,40 +202,34 @@ app.get("/", (req, res) => {
   }
 });
 
-app.post(
-  "/login",
-  passport.authenticate("local", { session: false }),
-  async (req, res, next) => {
-    try {
-      if (!req.user) {
-        return res
-          .status(401)
-          .json({ success: false, message: "Login failed" });
-      }
-
-      const user = await User.findById(req.user.id).exec();
-
-      const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
-        expiresIn: 1000000,
-        issuer: options.issuer,
-        audience: options.audience,
-      });
-      return res.json({
-        success: true,
-        data: { name: user.name, email: user.email },
-        message: `${req.user.name}, you have been logged in successfully`,
-        token,
-      });
-
-      // TODO: Send email upon login
-    } catch (error) {
-      res.json({
-        success: false,
-        error,
-      });
+app.post("/login", authenticateLocal, async (req, res, next) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Login failed" });
     }
+
+    const user = await User.findById(req.user.id).exec();
+
+    const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
+      expiresIn: 1000000,
+      issuer: options.issuer,
+      audience: options.audience,
+    });
+    return res.json({
+      success: true,
+      data: { name: user.name, email: user.email },
+      message: `${req.user.name}, you have been logged in successfully`,
+      token,
+    });
+
+    // TODO: Send email upon login
+  } catch (error) {
+    res.json({
+      success: false,
+      error,
+    });
   }
-);
+});
 
 app.post("/signup", async (req, res, next) => {
   try {

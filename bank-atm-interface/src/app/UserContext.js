@@ -47,7 +47,7 @@ export const UserContextProvider = ({ children }) => {
       setUser(result.data);
       return { success: true };
     } else {
-      return { success: false };
+      return result;
     }
   };
   const registerUserHandler = async (payload) => {
@@ -60,7 +60,7 @@ export const UserContextProvider = ({ children }) => {
       setUser(result.data);
       return { success: true };
     } else {
-      return { success: false };
+      return result;
     }
   };
 
