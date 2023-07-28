@@ -31,7 +31,6 @@ const WithdrawMoney = () => {
             amount: +amount,
           }
         );
-        console.log(result);
 
         if (result.success) {
           setWithdrawalInfo({
@@ -47,7 +46,13 @@ const WithdrawMoney = () => {
           });
           router.push("/atm/withdraw/error");
         }
-      } catch (error) {}
+      } catch (error) {
+        setWithdrawalInfo({
+          success: false,
+          error,
+        });
+        router.push("/atm/withdraw/error");
+      }
     }
   };
 

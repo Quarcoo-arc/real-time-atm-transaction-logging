@@ -1,16 +1,59 @@
 "use client";
+import { useUser } from "@/app/UserContext";
 import { AmountEntryTextField, FormButton } from "@/components";
 import { WrapAndCenter } from "@/components/Wrappers";
 import { SubPage } from "@/sharedPages";
 import { Box } from "@mui/material";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const DepositMoney = () => {
   const [amount, setAmount] = useState("");
+  const { checkPINEntry, setPin, pin, postDataHandler, setDepositInfo } =
+    useUser();
+  const router = useRouter();
 
-  const submitHandler = (e) => {
+  useEffect(() => {
+    checkPINEntry();
+    return () => {
+      setPin("");
+    };
+  }, []);
+
+  const submitHandler = async (e) => {
     e.preventDefault();
-    amount ? alert("Depositing...") : alert("Please enter an amount");
+    if (amount) {
+      try {
+        const result = await postDataHandler(
+          `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/deposit`,
+          {
+            pin,
+            amount: +amount,
+          }
+        );
+
+        if (result.success) {
+          setDepositInfo({
+            success: true,
+            amount,
+            currentBalance: result.data.currentBalance,
+          });
+          router.push("/atm/deposit/success");
+        } else {
+          setDepositInfo({
+            success: false,
+            error: result.error,
+          });
+          router.push("/atm/deposit/error");
+        }
+      } catch (error) {
+        setDepositInfo({
+          success: false,
+          error,
+        });
+        router.push("/atm/deposit/error");
+      }
+    }
   };
 
   return (

@@ -104,12 +104,10 @@ const ensureLoggedIn = authenticateJWT;
 const authenticateLocal = (req, res, next) => {
   passport.authenticate("local", { session: false }, (err, user) => {
     if (err || !user) {
-      return res
-        .status(401)
-        .json({
-          error: "Unauthorized",
-          message: "Incorrect username or password.",
-        });
+      return res.status(401).json({
+        error: "Unauthorized",
+        message: "Incorrect username or password.",
+      });
     }
     req.user = user;
     return next();
@@ -365,6 +363,7 @@ app.post("/withdraw", ensureLoggedIn, checkPIN, async (req, res) => {
       res.status(400);
       return res.json({
         success: false,
+        data: { accountBalance: user.accountBalance },
         error: "Insufficient User Funds",
       });
     }

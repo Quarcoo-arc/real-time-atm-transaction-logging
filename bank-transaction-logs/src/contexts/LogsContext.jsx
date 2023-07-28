@@ -65,10 +65,11 @@ export const LogsContextProvider = ({ children }) => {
     socket.on("connect", function () {
       console.log("Made socket connection", socket.id);
     });
-    socket.once("transaction", (msg) => {
-      !logs || msg.transactionId !== logs[0].meta.transactionId
+    socket.on("transaction", (msg) => {
+      console.log(msg);
+      !logs || (logs[0] && msg.transactionId !== logs[0].meta.transactionId)
         ? setNewLogs((prev) => [{ meta: msg }, ...prev])
-        : none;
+        : null;
     });
     socket.on("disconnect", function () {
       console.log("disconnect");

@@ -13,6 +13,7 @@ export const UserContextProvider = ({ children }) => {
   const [newPin, setNewPin] = useState("");
   const [oldPin, setOldPin] = useState("");
   const [withdrawalInfo, setWithdrawalInfo] = useState({});
+  const [depositInfo, setDepositInfo] = useState({});
 
   const router = useRouter();
   const pathname = usePathname();
@@ -136,6 +137,8 @@ export const UserContextProvider = ({ children }) => {
         setOldPin,
         withdrawalInfo,
         setWithdrawalInfo,
+        depositInfo,
+        setDepositInfo,
       }}
     >
       {children}

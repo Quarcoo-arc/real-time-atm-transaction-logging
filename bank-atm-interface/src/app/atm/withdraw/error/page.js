@@ -7,10 +7,17 @@ import {
   PageInfoText,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
 import { useUser } from "@/app/UserContext";
+import styled from "@emotion/styled";
+
+const GridItemWrapper = styled.div`
+  margin: 0 auto;
+  width: fit-content;
+`;
 
 const WithdrawalError = () => {
   const [error, setError] = useState("");
-  const { withdrawalInfo, setWithdrawalInfo } = useUser();
+  const [balance, setBalance] = useState(0);
+  const { withdrawalInfo, currencyFormatter, setWithdrawalInfo } = useUser();
 
   useEffect(() => {
     if (!withdrawalInfo || withdrawalInfo.success) {
@@ -19,8 +26,10 @@ const WithdrawalError = () => {
   }, []);
 
   useEffect(() => {
-    console.log(withdrawalInfo);
-    !withdrawalInfo.success && setError(withdrawalInfo.error);
+    if (!withdrawalInfo.success) {
+      setError(withdrawalInfo.error);
+      setBalance(withdrawalInfo.data ? withdrawalInfo.data.accountBalance : 0);
+    }
 
     return () => {
       setWithdrawalInfo({});
@@ -39,7 +48,12 @@ const WithdrawalError = () => {
             <PageInfoText>
               You do not have sufficient funds to perform this transaction.
             </PageInfoText>
-            <Grid title="Current Balance:" value="GH₵ 1200.00" />
+            <GridItemWrapper>
+              <Grid
+                title="Current Balance:"
+                value={currencyFormatter(balance)}
+              />
+            </GridItemWrapper>
           </>
         ) : error === "Insufficient ATM Funds" ? (
           <PageInfoText>
