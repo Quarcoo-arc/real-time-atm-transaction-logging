@@ -55,8 +55,13 @@ const cardsContentArr = [
 
 const ATMHome = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
+  const [username, setUsername] = useState("");
   const router = useRouter();
   const { user, checkAuth } = useContext(UserContext);
+
+  useEffect(() => {
+    setUsername(user && user.name ? user.name?.split(" ")[0] : "");
+  }, []);
 
   useEffect(() => {
     checkAuth();
@@ -65,7 +70,7 @@ const ATMHome = () => {
   return (
     <ContentWrapper>
       <Background />
-      <Heading>Hi {user.name?.split(" ")[0]}!</Heading>
+      <Heading>Hi {username}!</Heading>
       <Heading type="sub">Please select a transaction</Heading>
       <CardsWrapper>
         {cardsContentArr.map((el, idx) => (

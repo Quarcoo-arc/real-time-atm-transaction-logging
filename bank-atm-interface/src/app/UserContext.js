@@ -1,5 +1,5 @@
 import useSessionStorage from "@/hooks/useSessionStorage";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const { createContext, useState, useContext } = require("react");
 
@@ -12,6 +12,7 @@ export const UserContextProvider = ({ children }) => {
   const [pin, setPin] = useState("");
 
   const router = useRouter();
+  const pathname = usePathname();
 
   const postDataHandler = async (url, payload) => {
     const result = await fetch(url, {
@@ -86,6 +87,7 @@ export const UserContextProvider = ({ children }) => {
   };
 
   const verifyPIN = async () => {
+    if (!pin) return false;
     const result = await postDataHandler(
       `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/verify-pin`,
       {
@@ -99,6 +101,13 @@ export const UserContextProvider = ({ children }) => {
     setAuthToken("");
     setUser({});
     router.push("/login");
+  };
+
+  const checkPINEntry = async () => {
+    if (!(await verifyPIN())) {
+      setRedirectUrl(pathname);
+      router.push("/atm/auth");
+    }
   };
 
   return (
@@ -117,6 +126,7 @@ export const UserContextProvider = ({ children }) => {
         setRedirectUrl,
         verifyPIN,
         registerUserHandler,
+        checkPINEntry,
       }}
     >
       {children}

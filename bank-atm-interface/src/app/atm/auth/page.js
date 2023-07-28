@@ -12,9 +12,9 @@ const Auth = () => {
   const { postDataHandler } = useContext(UserContext);
   const router = useRouter();
 
-  const { pin, redirectUrl } = useUser();
+  const { redirectUrl, setPin, setRedirectUrl } = useUser();
   useEffect(() => {
-    if (!pin || !redirectUrl) {
+    if (!redirectUrl) {
       router.push("/atm");
     }
   }, []);
@@ -30,7 +30,10 @@ const Auth = () => {
       );
       if (result.success) {
         // TODO: redirect to page
-        alert(result.message);
+        const redirectTo = redirectUrl;
+        setPin(val);
+        setRedirectUrl("");
+        router.push(redirectTo);
       } else {
         setOpenDialogue(true);
       }

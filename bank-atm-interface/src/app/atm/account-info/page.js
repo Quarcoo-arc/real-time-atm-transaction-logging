@@ -1,22 +1,31 @@
 "use client";
-import UserContext from "@/app/UserContext";
+import { useUser } from "@/app/UserContext";
 import {
   Grid,
   GridWrapper,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
 import { SubPage } from "@/sharedPages";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const AccountInfo = () => {
-  const { postDataHandler, currencyFormatter } = useContext(UserContext);
+  const { postDataHandler, currencyFormatter, checkPINEntry, pin, setPin } =
+    useUser();
   const [userInfo, setUserInfo] = useState({});
+
+  useEffect(() => {
+    checkPINEntry();
+    return () => {
+      setPin("");
+    };
+  }, []);
+
   useEffect(() => {
     const func = async () => {
       try {
         const result = await postDataHandler(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/account-info`,
           {
-            pin: "1234",
+            pin,
           }
         );
         if (result.success) {
@@ -28,7 +37,7 @@ const AccountInfo = () => {
         console.log(error);
       }
     };
-    func();
+    pin && func();
   }, []);
 
   return (
@@ -38,7 +47,9 @@ const AccountInfo = () => {
         <Grid title="Account Name:" value={userInfo.name} />
         <Grid
           title="Account Balance:"
-          value={currencyFormatter(userInfo.accountBalance)}
+          value={currencyFormatter(
+            userInfo.accountBalance ? userInfo.accountBalance : 0
+          )}
         />
         <Grid title="Email:" value={userInfo.email} />
       </GridWrapper>
