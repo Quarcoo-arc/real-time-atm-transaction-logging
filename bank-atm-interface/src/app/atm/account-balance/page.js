@@ -8,6 +8,8 @@ const AccountBalance = () => {
   const { postDataHandler, currencyFormatter, checkPINEntry, pin, setPin } =
     useUser();
   const [accountBalance, setAccountBalance] = useState(0);
+  const [displayAlert, setDisplayAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     checkPINEntry();
@@ -28,16 +30,32 @@ const AccountBalance = () => {
         if (result.success) {
           setAccountBalance(result.data.accountBalance);
         } else {
-          // TODO: Display modal with retry functionality
+          setDisplayAlert(true);
+          setErrorMessage(
+            result.message ? result.message : "Something went wrong."
+          );
         }
       } catch (error) {
-        console.log(error);
+        setDisplayAlert(true);
+        setErrorMessage(
+          error.message
+            ? error.message
+            : error
+            ? error
+            : "Something went wrong."
+        );
       }
     };
     pin && func();
   }, []);
   return (
-    <SubPage subHeading="Here is your account balance!" buttons={true}>
+    <SubPage
+      subHeading="Here is your account balance!"
+      buttons={true}
+      setOpenSnackBar={setDisplayAlert}
+      alertMessage={errorMessage}
+      openSnackBar={displayAlert}
+    >
       <AccountBalText>{currencyFormatter(accountBalance)}</AccountBalText>
     </SubPage>
   );

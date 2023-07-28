@@ -11,6 +11,8 @@ const AccountInfo = () => {
   const { postDataHandler, currencyFormatter, checkPINEntry, pin, setPin } =
     useUser();
   const [userInfo, setUserInfo] = useState({});
+  const [displayAlert, setDisplayAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     checkPINEntry();
@@ -31,17 +33,33 @@ const AccountInfo = () => {
         if (result.success) {
           setUserInfo(result.data);
         } else {
-          // TODO: Display modal with retry functionality
+          setDisplayAlert(true);
+          setErrorMessage(
+            result.message ? result.message : "Something went wrong."
+          );
         }
       } catch (error) {
-        console.log(error);
+        setDisplayAlert(true);
+        setErrorMessage(
+          error.message
+            ? error.message
+            : error
+            ? error
+            : "Something went wrong."
+        );
       }
     };
     pin && func();
   }, []);
 
   return (
-    <SubPage subHeading="Here are your account details!" buttons={true}>
+    <SubPage
+      subHeading="Here are your account details!"
+      buttons={true}
+      setOpenSnackBar={setDisplayAlert}
+      alertMessage={errorMessage}
+      openSnackBar={displayAlert}
+    >
       <GridWrapper>
         <Grid title="Account Number:" value={userInfo.accountNumber} />
         <Grid title="Account Name:" value={userInfo.name} />

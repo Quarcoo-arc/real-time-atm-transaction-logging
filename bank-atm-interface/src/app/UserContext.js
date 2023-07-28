@@ -10,6 +10,8 @@ export const UserContextProvider = ({ children }) => {
   const [user, setUser] = useSessionStorage("user", {});
   const [redirectUrl, setRedirectUrl] = useState("");
   const [pin, setPin] = useState("");
+  const [newPin, setNewPin] = useState("");
+  const [oldPin, setOldPin] = useState("");
 
   const router = useRouter();
   const pathname = usePathname();
@@ -127,6 +129,10 @@ export const UserContextProvider = ({ children }) => {
         verifyPIN,
         registerUserHandler,
         checkPINEntry,
+        newPin,
+        setNewPin,
+        oldPin,
+        setOldPin,
       }}
     >
       {children}

@@ -15,7 +15,15 @@ import { useUser } from "@/app/UserContext";
  *
  */
 
-const PinEntryPage = ({ heading, otp, setOtp, onComplete }) => {
+const PinEntryPage = ({
+  heading,
+  otp,
+  setOtp,
+  onComplete,
+  openSnackBar = false,
+  setOpenSnackBar,
+  alertMessage = "",
+}) => {
   const { checkAuth } = useUser();
   useEffect(() => {
     checkAuth();
@@ -40,7 +48,12 @@ const PinEntryPage = ({ heading, otp, setOtp, onComplete }) => {
   };
 
   return (
-    <SubPage subHeading={heading}>
+    <SubPage
+      subHeading={heading}
+      setOpenSnackBar={setOpenSnackBar}
+      alertMessage={alertMessage}
+      openSnackBar={openSnackBar}
+    >
       <ContentWrapper>
         <MuiOtpInput
           sx={{
