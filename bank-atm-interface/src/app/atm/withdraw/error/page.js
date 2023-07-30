@@ -26,7 +26,7 @@ const WithdrawalError = () => {
   }, []);
 
   useEffect(() => {
-    if (!withdrawalInfo.success) {
+    if (withdrawalInfo.success === false) {
       setError(withdrawalInfo.error);
       setBalance(withdrawalInfo.data ? withdrawalInfo.data.accountBalance : 0);
     }

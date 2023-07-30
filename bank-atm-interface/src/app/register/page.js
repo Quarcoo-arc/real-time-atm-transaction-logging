@@ -72,19 +72,23 @@ const SignUp = () => {
     },
     validationSchema: secondValidationSchema,
     onSubmit: async (values) => {
-      setUserInfo((prev) => ({
-        ...prev,
+      const result = await registerUserHandler({
+        email: userInfo.email,
+        password: userInfo.password,
         name: values.name,
-        atm_pin: values.atm_pin,
-      }));
-      const result = await registerUserHandler(userInfo);
+        pin: values.atm_pin,
+      });
 
       if (result.success) {
         router.push("/register/success");
       } else {
         setDisplayAlert(true);
         setErrorMessage(
-          result.message ? result.message : "Something went wrong."
+          result.error && result.error.message
+            ? result.error.message
+            : result.message
+            ? result.message
+            : "Something went wrong."
         );
       }
     },

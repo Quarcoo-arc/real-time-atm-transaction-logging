@@ -17,7 +17,7 @@ export default function Home() {
   const { user } = useUser();
   return (
     <main>
-      {user ? (
+      {user && user.name ? (
         <UserIcon email={user.email} name={user.name} />
       ) : (
         <AuthButton type="login" />

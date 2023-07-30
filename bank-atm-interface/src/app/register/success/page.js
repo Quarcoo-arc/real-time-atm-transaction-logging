@@ -1,14 +1,20 @@
 "use client";
 import { AuthPage } from "@/sharedPages";
-import React from "react";
+import React, { useEffect } from "react";
 import registrationSuccess from "../../../../public/successful_registration_img.jpg";
 import { ContentWrapper } from "@/components/Wrappers";
 import { FormButton, Heading } from "@/components";
 import { WrapAndLeft } from "./page.styled";
 import { useRouter } from "next/navigation";
+import { useUser } from "@/app/UserContext";
 
 const SuccessfulRegistration = () => {
   const router = useRouter();
+  const { checkAuth } = useUser();
+  useEffect(() => {
+    checkAuth();
+  }, []);
+
   return (
     <AuthPage src={registrationSuccess}>
       <ContentWrapper>
@@ -18,7 +24,7 @@ const SuccessfulRegistration = () => {
         </div>
         <WrapAndLeft>
           <p>Thanks for choosing us</p>
-          <FormButton onClick={() => router.push("/dashboard")} type="button">
+          <FormButton onClick={() => router.push("/atm")} type="button">
             Visit ATM
           </FormButton>
           <span>

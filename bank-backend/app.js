@@ -174,6 +174,7 @@ const transportOptions = {
 const log = createLogger({
   transports: [new transports.MongoDB(transportOptions)],
 });
+
 // Send email
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -213,19 +214,86 @@ app.post("/login", authenticateLocal, async (req, res, next) => {
       issuer: options.issuer,
       audience: options.audience,
     });
-    return res.json({
+    res.json({
       success: true,
       data: { name: user.name, email: user.email },
       message: `${req.user.name}, you have been logged in successfully`,
       token,
     });
-
-    // TODO: Send email upon login
   } catch (error) {
     res.json({
       success: false,
       error,
     });
+  }
+
+  // Send email upon login
+  try {
+    const mailOptions = {
+      from: "no-reply@bank.com",
+      to: req.user.email,
+      subject: "Bank ATM Banking",
+      html: `
+  <head>
+    <title>Bank ATM Banking</title>
+    <style>
+      body {
+        font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
+        position: relative;
+        height: 100%;
+        font-size: 1.2rem;
+      }
+      .container {
+        width: fit-content;
+        max-width: 80%;
+        margin: 2rem auto;
+        background-color: #537188;
+        color: white;
+        padding: 4rem;
+      }
+      h1,
+      h4 {
+        color: #e1d4bb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Bank ATM Banking</h1>
+      <p>Hello ${req.user.name}</p>
+      <p>We noticed a new login to your account.</p>
+  
+      <h4>If this was you</h4>
+      <p>You can ignore this message. There's no need to take action</p>
+  
+      <h4>If this wasn't you</h4>
+      <p>Someone may have access to your password, and or PIN.</p>
+      <p>Complete these steps to reset your password:</p>
+      <ul>
+        <li>
+          Reset your password.
+          <ul>
+            <li>Head over to the login page and click on "Forgot password".</li>
+          </ul>
+        </li>
+        <li>Check for any unauthorised transactions.</li>
+        <li>You may also reset your pin</li>
+      </ul>
+    </div>
+  </body>
+  </html>
+  `,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error, "Failed to send email");
+      } else {
+        console.log(`Email sent to ${req.user.email}`);
+      }
+    });
+  } catch (error) {
+    console.log(error);
   }
 });
 
@@ -246,8 +314,73 @@ app.post("/signup", async (req, res, next) => {
       audience: options.audience,
     });
 
-    res.send({ success: true, data: result, token });
+    req.user = {
+      ...req.user,
+      id: result.id,
+      name: result.name,
+      email: result.email,
+    };
+
+    res.json({
+      success: true,
+      data: { name: result.name, email: result.email },
+      token,
+    });
     // TODO: Send email upon successful account creation
+    try {
+      const mailOptions = {
+        from: "no-reply@bank.com",
+        to: result.email,
+        subject: "Bank ATM Banking",
+        html: `
+  <head>
+    <title>Bank ATM Banking</title>
+    <style>
+      body {
+        font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
+        position: relative;
+        height: 100%;
+        font-size: 1.2rem;
+      }
+      .container {
+        width: fit-content;
+        max-width: 80%;
+        margin: 2rem auto;
+        background-color: #537188;
+        color: white;
+        padding: 4rem;
+      }
+      h1,
+      h4,
+      span {
+        color: #e1d4bb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Welcome to Bank ATM Banking 🎉</h1>
+      <p>Congratulations ${result.name}!</p>
+      <p>Your account was created successfully.</p>
+
+      <br />
+      <p>Fast, Reliable and Affordable <span>Banking</span> You can Trust</p>
+    </div>
+  </body>
+</html>
+  `,
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error, "Failed to send email");
+        } else {
+          console.log(`Email sent to ${result.email}`);
+        }
+      });
+    } catch (error) {
+      console.log(error);
+    }
   } catch (error) {
     res.send({
       success: false,

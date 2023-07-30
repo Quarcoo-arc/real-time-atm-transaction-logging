@@ -19,7 +19,6 @@ const Auth = () => {
     }
   }, []);
 
-  //TODO: Check if you were redirected from a different page else display 404 page
   const checkPIN = async (val) => {
     try {
       const result = await postDataHandler(
@@ -29,7 +28,6 @@ const Auth = () => {
         }
       );
       if (result.success) {
-        // TODO: redirect to page
         const redirectTo = redirectUrl;
         setPin(val);
         setRedirectUrl("");
