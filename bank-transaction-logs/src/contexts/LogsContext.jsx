@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { io } from "socket.io-client";
 
 const LogsContext = createContext();
@@ -9,6 +9,7 @@ export const LogsContextProvider = ({ children }) => {
   const [logs, setLogs] = useState([]);
   const [searchString, setSearchString] = useState("");
   const [newLogs, setNewLogs] = useState([]);
+  const [staffInfo, setStaffInfo] = useState({ name: "", email: "" });
 
   const loadLogs = async () => {
     try {
@@ -38,6 +39,33 @@ export const LogsContextProvider = ({ children }) => {
     }
   };
 
+  const fetchStaffInfo = async () => {
+    const result = await fetch(`${BASE_URL}/active-staff`);
+    const data = await result.json();
+    if (data.success) {
+      const { name, email } = data.data;
+      setStaffInfo({ name, email });
+    }
+  };
+
+  const changeStaffInfo = async (name, email) => {
+    const result = await fetch(`${BASE_URL}/active-staff`, {
+      headers: {
+        "Content-Type": "Application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        name,
+        email,
+      }),
+    });
+    const data = await result.json();
+    if (data.success) {
+      const { name, email } = data.data;
+      setStaffInfo({ name, email });
+    }
+  };
+
   useEffect(() => {
     const func = async () => await filterLogs();
     func();
@@ -45,6 +73,11 @@ export const LogsContextProvider = ({ children }) => {
 
   useEffect(() => {
     const func = async () => await loadLogs();
+    func();
+  }, []);
+
+  useEffect(() => {
+    const func = async () => await fetchStaffInfo();
     func();
   }, []);
 
@@ -88,11 +121,15 @@ export const LogsContextProvider = ({ children }) => {
         loadLogs,
         searchString,
         setSearchString,
+        changeStaffInfo,
+        staffInfo,
       }}
     >
       {children}
     </LogsContext.Provider>
   );
 };
+
+export const useLogs = () => useContext(LogsContext);
 
 export default LogsContext;

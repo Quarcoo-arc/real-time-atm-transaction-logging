@@ -18,6 +18,7 @@ import {
   StaffName,
 } from "./StaffOnDuty.styled";
 import { useState } from "react";
+import { useLogs } from "../../contexts/LogsContext";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -57,10 +58,9 @@ function BootstrapDialogTitle(props) {
 
 const StaffOnDuty = () => {
   const [open, setOpen] = React.useState(false);
-  const [staffName, setStaffName] = useState("Michael Quarcoo");
-  const [staffEmail, setStaffEmail] = useState("michaelquarcoo04@gmail.com");
-  const [nameInputField, setNameInputField] = useState(staffName);
-  const [emailInputField, setEmailInputField] = useState(staffEmail);
+  const { staffInfo, changeStaffInfo } = useLogs();
+  const [nameInputField, setNameInputField] = useState(staffInfo.name);
+  const [emailInputField, setEmailInputField] = useState(staffInfo.email);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -70,9 +70,7 @@ const StaffOnDuty = () => {
   };
 
   const handleSave = () => {
-    // TODO: Make API call to backend updating the staff on duty
-    setStaffEmail(emailInputField);
-    setStaffName(nameInputField);
+    changeStaffInfo(nameInputField, emailInputField);
     handleClose();
   };
 
@@ -86,8 +84,8 @@ const StaffOnDuty = () => {
       >
         <StaffBtnWrapper>
           <StaffInfoWrapper>
-            <StaffName>{staffName}</StaffName>
-            <StaffEmail>{staffEmail}</StaffEmail>
+            <StaffName>{staffInfo.name}</StaffName>
+            <StaffEmail>{staffInfo.email}</StaffEmail>
           </StaffInfoWrapper>
 
           <SyncIcon

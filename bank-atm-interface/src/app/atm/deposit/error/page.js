@@ -5,8 +5,9 @@ import {
   GridWrapper,
   PageInfoText,
 } from "@/components/DepositWithdrawalComponents/DepositWithdrawalComponents";
+import { useUser } from "@/app/UserContext";
 
-const WithdrawalSuccess = () => {
+const DepositFailure = () => {
   const { depositInfo, setDepositInfo } = useUser();
 
   useEffect(() => {
@@ -36,4 +37,4 @@ const WithdrawalSuccess = () => {
   );
 };
 
-export default WithdrawalSuccess;
+export default DepositFailure;
