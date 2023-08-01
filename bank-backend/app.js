@@ -144,13 +144,92 @@ const checkPIN = async (req, res, next) => {
   }
 };
 
-const logTransaction = (info) => {
+// Send email
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  port: 465,
+  secure: true,
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
+
+const logTransaction = async (info) => {
   const msg = info.message;
   delete info.message;
   info.timestamp = new Date();
 
   if (info.status === "failed") {
     log.error(msg, info);
+    if (info.description !== "Insufficient user funds") {
+      // Send active staff an email
+      try {
+        const globalVars = await Global.findById("globalVars").exec();
+        const staffEmail = globalVars.activeStaffEmail;
+        const staffName = globalVars.activeStaffName;
+        const mailOptions = {
+          from: "no-reply@bank.com",
+          to: staffEmail,
+          subject: "Bank ATM Banking - Error Notification",
+          html: `<html lang="en">
+  <head>
+    <title>Bank ATM Banking</title>
+    <style>
+      body {
+        font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
+        position: relative;
+        height: 100%;
+        font-size: 1.2rem;
+      }
+      .container {
+        width: fit-content;
+        max-width: 80%;
+        margin: 2rem auto;
+        background-color: #537188;
+        color: white;
+        padding: 4rem;
+      }
+      h1,
+      h4,
+      span {
+        color: #e1d4bb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>😢 Oops Another Failed Transaction</h1>
+      <p>Hi ${staffName}!</p>
+      <p>
+        The transaction with ID <span>${info.transactionId}</span> failed with a
+        <span>${info.description}</span> error at the ATM.
+      </p>
+      <p>Kindly look into it ASAP.</p>
+
+      <br />
+      <p>Fast, Reliable and Affordable <span>Banking</span> You can Trust</p>
+    </div>
+  </body>
+</html>
+          
+          `,
+        };
+        transporter.sendMail(mailOptions, function (error, info) {
+          if (error) {
+            console.log(
+              "Failed to send notification of error to active staff email: ",
+              error
+            );
+          }
+        });
+      } catch (error) {
+        console.log(
+          "Failed to send notification of error to active staff email: ",
+          error
+        );
+      }
+    }
   } else {
     log.info(msg, info);
   }
@@ -173,17 +252,6 @@ const transportOptions = {
 //Logger
 const log = createLogger({
   transports: [new transports.MongoDB(transportOptions)],
-});
-
-// Send email
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASSWORD,
-  },
 });
 
 io.on("connection", (socket) => {
@@ -287,7 +355,7 @@ app.post("/login", authenticateLocal, async (req, res, next) => {
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        console.log(error, "Failed to send email");
+        console.log("Failed to send email: ", error);
       } else {
         console.log(`Email sent to ${req.user.email}`);
       }
