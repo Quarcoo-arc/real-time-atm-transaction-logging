@@ -6,6 +6,7 @@ const {
   ERRORS,
   NO_ERROR,
   TransactionLogs,
+  ResetToken,
 } = require("./models.js");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
@@ -736,6 +737,38 @@ app.post("/verify-pin", ensureLoggedIn, checkPIN, (req, res) => {
 
 app.get("/verify-token", ensureLoggedIn, (req, res) => {
   res.json({ success: true, message: "Token is valid" });
+});
+
+app.post("/forgot-password", async (req, res) => {
+  try {
+    const email = req.body.email;
+    if (!email) {
+      return res.json({
+        success: false,
+        message: "Invalid request body",
+      });
+    }
+    const user = await User.findOne({ email });
+
+    const resetToken = new ResetToken({
+      userId: user._id,
+    });
+
+    const tokenObj = await resetToken.save();
+
+    // Send email to user with link to password reset page & token id
+
+    res.json({
+      success: true,
+      message: "Successfully sent token to your email",
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      error,
+      message: "Failed to generate reset token",
+    });
+  }
 });
 
 app.get("/active-staff", async (req, res) => {
