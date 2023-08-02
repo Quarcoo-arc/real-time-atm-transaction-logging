@@ -15,10 +15,12 @@ import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { ChevronLeftRounded, ReplayRounded } from "@mui/icons-material";
 import { BackLink, ButtonWrapper, RetryLink } from "./page.styled";
+import { useUser } from "../UserContext";
 
 const ForgotPassword = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
-  const [error, setError] = useState(true);
+  const [error, setError] = useState(false);
+  const { postDataHandler } = useUser();
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")
@@ -31,9 +33,20 @@ const ForgotPassword = () => {
       email: "",
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
-      console.log(values);
-      setOpenDialogue(true);
+    onSubmit: async (values) => {
+      const result = await postDataHandler(
+        `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/forgot-password`,
+        {
+          email: values.email,
+        }
+      );
+
+      if (!result.success) {
+        setError(true);
+        setOpenDialogue(true);
+      } else {
+        setOpenDialogue(true);
+      }
     },
   });
 
@@ -79,17 +92,22 @@ const ForgotPassword = () => {
       <DialogueBox
         open={openDialogue}
         setOpen={setOpenDialogue}
-        heading="Email sent"
-        body="Check your email for a link to reset your password" //TODO: Change dialogue box content on error
+        heading={error ? "Something went wrong" : "Email sent"}
+        body={
+          error
+            ? "Failed to send link to your email"
+            : "Check your email for a link to reset your password"
+        }
         footer={
           <ButtonWrapper>
             <BackLink href="/login">
               <ChevronLeftRounded /> <p>Back to Sign In</p>
             </BackLink>
-            <RetryLink onClick={() => setOpenDialogue(false)}>
-              <ReplayRounded /> <p>Retry</p>
-            </RetryLink>
-            {/* Todo: Add retry button for the case of an error */}
+            {error ? (
+              <RetryLink onClick={() => setOpenDialogue(false)}>
+                <ReplayRounded /> <p>Retry</p>
+              </RetryLink>
+            ) : null}
           </ButtonWrapper>
         }
       />

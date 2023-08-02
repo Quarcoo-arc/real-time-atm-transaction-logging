@@ -321,8 +321,16 @@ app.post("/login", authenticateLocal, async (req, res, next) => {
         padding: 4rem;
       }
       h1,
-      h4 {
+      h4,
+      span,
+      a {
         color: #e1d4bb;
+      }
+      a {
+        text-decoration: none;
+      }
+      a:hover {
+        color: #c2993a;
       }
     </style>
   </head>
@@ -331,22 +339,30 @@ app.post("/login", authenticateLocal, async (req, res, next) => {
       <h1>Bank ATM Banking</h1>
       <p>Hello ${req.user.name}</p>
       <p>We noticed a new login to your account.</p>
-  
+
       <h4>If this was you</h4>
       <p>You can ignore this message. There's no need to take action</p>
-  
+
       <h4>If this wasn't you</h4>
       <p>Someone may have access to your password, and or PIN.</p>
-      <p>Complete these steps to reset your password:</p>
+      <p>Complete these steps to secure your account:</p>
       <ul>
         <li>
           Reset your password.
           <ul>
-            <li>Head over to the login page and click on "Forgot password".</li>
+            <li>
+              Head over to the
+              <a href="${process.env.bank_interface_url}/forgot-password"
+                >Forgot password</a
+              >
+              page.
+            </li>
+            <li>Key in your email address</li>
+            <li>A reset link will be sent to you</li>
           </ul>
         </li>
         <li>Check for any unauthorised transactions.</li>
-        <li>You may also reset your pin</li>
+        <li>You may also reset your pin.</li>
       </ul>
     </div>
   </body>
@@ -395,7 +411,7 @@ app.post("/signup", async (req, res, next) => {
       data: { name: result.name, email: result.email },
       token,
     });
-    // TODO: Send email upon successful account creation
+    // Send email upon successful account creation
     try {
       const mailOptions = {
         from: "no-reply@bank.com",
@@ -750,6 +766,13 @@ app.post("/forgot-password", async (req, res) => {
     }
     const user = await User.findOne({ email });
 
+    if (!user) {
+      return res.json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
     const resetToken = new ResetToken({
       userId: user._id,
     });
@@ -757,16 +780,140 @@ app.post("/forgot-password", async (req, res) => {
     const tokenObj = await resetToken.save();
 
     // Send email to user with link to password reset page & token id
+    try {
+      const mailOptions = {
+        from: "no-reply@bank.com",
+        to: user.email,
+        subject: "Bank ATM Banking | Password Reset",
+        html: `
+  <head>
+    <title>Bank ATM Banking | Password Reset</title>
+    <style>
+      body {
+        font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
+        position: relative;
+        height: 100%;
+        font-size: 1.2rem;
+      }
+      .container {
+        width: fit-content;
+        max-width: 80%;
+        margin: 2rem auto;
+        background-color: #537188;
+        color: white;
+        padding: 4rem;
+      }
+      h1,
+      h4,
+      span,
+      a {
+        color: #e1d4bb;
+      }
+      a {
+        text-decoration: none;
+      }
+      a:hover {
+        color: #c2993a;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Password Reset - Bank ATM Banking</h1>
+      <p>Hi ${user.name}</p>
+      <p>We received a password reset request for your account.</p>
 
-    res.json({
-      success: true,
-      message: "Successfully sent token to your email",
-    });
+      <h4>If this was not you</h4>
+      <p>You can ignore this message. There's no need to take action</p>
+
+      <h4>If this was you</h4>
+      <p>
+        Click
+        <a href="${process.env.bank_interface_url}/password-reset?token=${tokenObj._id}"> here</a> to
+        enter your new password.
+      </p>
+      <p>The link expires in 15 minutes.</p>
+    </div>
+  </body>
+</html>
+  `,
+      };
+
+      transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+          console.log(error, "Failed to send link to email");
+          res.json({
+            success: false,
+            message: "Failed to send link to your email",
+          });
+        } else {
+          console.log(`Reset link sent to ${result.email}`);
+          res.json({
+            success: true,
+            message: "Successfully sent link to your email",
+          });
+        }
+      });
+    } catch (error) {
+      res.json({
+        success: false,
+        error,
+        message: "Failed to send link to your email",
+      });
+    }
   } catch (error) {
     res.json({
       success: false,
       error,
       message: "Failed to generate reset token",
+    });
+  }
+});
+
+app.post("/password-reset", async (req, res) => {
+  try {
+    const newPassword = req.body.newPassword;
+    const tokenId = req.body.token;
+
+    if (!newPassword || !tokenId) {
+      return res.json({
+        success: false,
+        message: "Invalid request body",
+      });
+    }
+
+    const resetToken = await ResetToken.findById(tokenId).exec();
+    if (!resetToken) {
+      return res.json({
+        success: false,
+        message: "Invalid reset token",
+      });
+    }
+    const currDate = new Date();
+    const expiryDate = new Date(resetToken.expiresAt);
+
+    if (expiryDate < currDate) {
+      return res.json({
+        success: false,
+        message: "Token has expired",
+      });
+    }
+    const user = await User.findById(resetToken.userId).exec();
+    user.password = newPassword;
+
+    await user.save();
+
+    await ResetToken.findByIdAndRemove(resetToken._id);
+
+    return res.json({
+      success: true,
+      message: "Password update successful",
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: "Something went wrong",
+      error: error.stack,
     });
   }
 });

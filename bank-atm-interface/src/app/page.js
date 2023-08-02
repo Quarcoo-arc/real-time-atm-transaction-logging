@@ -11,14 +11,23 @@ import { Button } from "@mui/material";
 import susuBox from "../../public/susu_box.svg";
 import { useRouter } from "next/navigation";
 import { useUser } from "./UserContext";
+import { useEffect, useState } from "react";
 
 export default function Home() {
+  const [userInfo, setUserInfo] = useState({ email: "", name: "" });
   const router = useRouter();
   const { user } = useUser();
+  useEffect(() => {
+    setUserInfo({
+      email: user.email,
+      name: user.name,
+    });
+  }, [JSON.stringify(user)]);
+
   return (
     <main>
-      {user && user.name ? (
-        <UserIcon email={user.email} name={user.name} />
+      {userInfo && userInfo.name ? (
+        <UserIcon email={userInfo.email} name={userInfo.name} />
       ) : (
         <AuthButton type="login" />
       )}
