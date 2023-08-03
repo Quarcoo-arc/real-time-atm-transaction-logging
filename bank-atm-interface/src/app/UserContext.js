@@ -1,6 +1,5 @@
 import useSessionStorage from "@/hooks/useSessionStorage";
 import { usePathname, useRouter } from "next/navigation";
-import { useIdleTimer } from "react-idle-timer";
 
 const { createContext, useState, useContext, useEffect } = require("react");
 
@@ -9,19 +8,12 @@ const UserContext = createContext();
 export const UserContextProvider = ({ children }) => {
   const [authToken, setAuthToken] = useSessionStorage("token", "");
   const [user, setUser] = useSessionStorage("user", {});
-  const [sessionTimeout, setSessionTimeout] = useState(false);
-  const [lastActivity, setLastActivity] = useSessionStorage(
-    "lastActivity",
-    null
-  );
   const [redirectUrl, setRedirectUrl] = useState("");
   const [pin, setPin] = useState("");
   const [newPin, setNewPin] = useState("");
   const [oldPin, setOldPin] = useState("");
   const [withdrawalInfo, setWithdrawalInfo] = useState({});
   const [depositInfo, setDepositInfo] = useState({});
-  const [remainingTime, setRemainingTime] = useState(0);
-  const [openTimeoutDialogue, setOpenTimeoutDialogue] = useState(false);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -105,7 +97,6 @@ export const UserContextProvider = ({ children }) => {
 
   const logoutHandler = () => {
     setAuthToken("");
-    setLastActivity(null);
     setUser({});
     router.push("/login");
   };
@@ -122,92 +113,6 @@ export const UserContextProvider = ({ children }) => {
       router.push("/login");
     }
   };
-
-  const handleUserActivity = () => {
-    setLastActivity(new Date());
-  };
-
-  useEffect(() => {
-    if (authToken) {
-      window.addEventListener("click", handleUserActivity);
-      window.addEventListener("keydown", handleUserActivity);
-    }
-
-    return () => {
-      window.removeEventListener("click", handleUserActivity);
-      window.removeEventListener("keydown", handleUserActivity);
-    };
-  }, []);
-
-  useEffect(() => {
-    let timerId = "";
-    if (authToken) {
-      const inactivityTimeout = 5 * 60 * 1000; // 5 minutes in milliseconds
-
-      const handleInactivity = () => {
-        const currentTime = new Date();
-        const timeElapsed = currentTime - lastActivity;
-
-        if (timeElapsed >= inactivityTimeout) {
-          setSessionTimeout(true);
-          logoutHandler();
-        }
-      };
-
-      timerId = setInterval(handleInactivity, inactivityTimeout);
-    }
-
-    return () => {
-      timerId && clearInterval(timerId);
-    };
-  }, []);
-
-  const onAction = (event, idleTimer) => {
-    if (idleTimer.isPrompted()) {
-      idleTimer.activate();
-    }
-  };
-
-  const onActive = (event, idleTimer) => {
-    if (idleTimer.isPrompted()) {
-      setOpenTimeoutDialogue(false);
-    }
-  };
-
-  const onPrompt = () => {
-    setOpenTimeoutDialogue(true);
-  };
-
-  const onIdle = () => {
-    setOpenTimeoutDialogue(false);
-    logoutHandler();
-  };
-
-  const promptBeforeIdle = 1000 * 40;
-
-  const { getRemainingTime, activate } = useIdleTimer({
-    disabled: !authToken,
-    timeout: 1000 * 60 * 4,
-    promptBeforeIdle,
-    onAction,
-    onActive,
-    onPrompt,
-    onIdle,
-  });
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRemainingTime(Math.ceil(getRemainingTime() / 1000));
-    }, 500);
-
-    return () => {
-      clearInterval(interval);
-    };
-  });
-
-  const extendSession = () => activate();
-
-  const timeTillPrompt = Math.max(remainingTime - promptBeforeIdle / 1000, 0);
 
   return (
     <UserContext.Provider
@@ -234,10 +139,6 @@ export const UserContextProvider = ({ children }) => {
         setWithdrawalInfo,
         depositInfo,
         setDepositInfo,
-        sessionTimeout,
-        setSessionTimeout,
-        extendSession,
-        timeTillPrompt,
       }}
     >
       {children}

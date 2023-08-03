@@ -15,20 +15,8 @@ import { useUser } from "../../UserContext";
 const Login = () => {
   const [displayAlert, setDisplayAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { sessionTimeout, setSessionTimeout, loginUserHandler } = useUser();
+  const { loginUserHandler } = useUser();
   const router = useRouter();
-
-  useEffect(() => {
-    if (sessionTimeout) {
-      setErrorMessage("Logged out due to inactivity");
-      setDisplayAlert(true);
-    }
-
-    return () => {
-      setSessionTimeout(false);
-      setErrorMessage("");
-    };
-  }, [sessionTimeout]);
 
   const validationSchema = yup.object({
     email: yup
