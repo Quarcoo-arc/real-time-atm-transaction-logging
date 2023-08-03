@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { AuthPage } from "@/sharedPages";
-import forgotPasswordImg from "../../../public/forgot_password_img.jpg";
+import forgotPasswordImg from "../../../../public/forgot_password_img.jpg";
 import {
   DialogueBox,
   FormButton,
@@ -15,7 +15,7 @@ import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { ChevronLeftRounded, ReplayRounded } from "@mui/icons-material";
 import { BackLink, ButtonWrapper, RetryLink } from "./page.styled";
-import { useUser } from "../UserContext";
+import { useUser } from "../../UserContext";
 
 const ForgotPassword = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
@@ -83,7 +83,7 @@ const ForgotPassword = () => {
           />
           <WrapAndCenter>
             <FormButton type="submit">Send</FormButton>
-            <Link href="/register">
+            <Link href="/login">
               Back to <span>Sign In</span>
             </Link>
           </WrapAndCenter>

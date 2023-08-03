@@ -3,6 +3,7 @@ import "./globals.css";
 import { Poppins, Dancing_Script } from "next/font/google";
 import { Logo } from "@/components";
 import { UserContextProvider } from "./UserContext";
+import React from "react";
 
 const poppins = Poppins({
   subsets: ["latin"],

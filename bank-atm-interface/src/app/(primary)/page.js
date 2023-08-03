@@ -8,9 +8,9 @@ import {
   UpperCaseText,
 } from "./page.styled";
 import { Button } from "@mui/material";
-import susuBox from "../../public/susu_box.svg";
+import susuBox from "../../../public/susu_box.svg";
 import { useRouter } from "next/navigation";
-import { useUser } from "./UserContext";
+import { useUser } from "../UserContext";
 import { useEffect, useState } from "react";
 
 export default function Home() {

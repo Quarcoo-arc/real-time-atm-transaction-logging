@@ -1,7 +1,7 @@
 "use client";
 import { AuthPage } from "@/sharedPages";
 import React, { useEffect, useState } from "react";
-import passwordResetImg from "../../../public/reset_password_img.jpg";
+import passwordResetImg from "../../../../../public/reset_password_img.jpg";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import {
@@ -14,7 +14,7 @@ import { Box, CircularProgress } from "@mui/material";
 import * as yup from "yup";
 import { useFormik } from "formik";
 import Link from "next/link";
-import { useUser } from "../UserContext";
+import { useUser } from "../../UserContext";
 import {
   BackLink,
   ButtonWrapper,

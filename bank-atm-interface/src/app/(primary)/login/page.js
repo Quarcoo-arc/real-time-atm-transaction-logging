@@ -1,7 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AuthPage } from "@/sharedPages";
-import loginImg from "../../../public/login_img.jpg";
+import loginImg from "../../../../public/login_img.jpg";
 import { FormButton, Heading, OutlinedTextField } from "@/components";
 import Box from "@mui/material/Box";
 import * as yup from "yup";
@@ -10,13 +10,26 @@ import Link from "next/link";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { Wrapper } from "./page.styled";
 import { useRouter } from "next/navigation";
-import { useUser } from "../UserContext";
+import { useUser } from "../../UserContext";
 
 const Login = () => {
   const [displayAlert, setDisplayAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { loginUserHandler } = useUser();
+  const { sessionTimeout, setSessionTimeout, loginUserHandler } = useUser();
   const router = useRouter();
+
+  useEffect(() => {
+    if (sessionTimeout) {
+      setErrorMessage("Logged out due to inactivity");
+      setDisplayAlert(true);
+    }
+
+    return () => {
+      setSessionTimeout(false);
+      setErrorMessage("");
+    };
+  }, [sessionTimeout]);
+
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")

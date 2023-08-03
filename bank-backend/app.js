@@ -324,7 +324,7 @@ app.post("/login", authenticateLocal, async (req, res, next) => {
       h4,
       span,
       a {
-        color: #e1d4bb;
+        color: #e1d4bb !important;
       }
       a {
         text-decoration: none;
@@ -807,7 +807,7 @@ app.post("/forgot-password", async (req, res) => {
       h4,
       span,
       a {
-        color: #e1d4bb;
+        color: #e1d4bb !important;
       }
       a {
         text-decoration: none;
