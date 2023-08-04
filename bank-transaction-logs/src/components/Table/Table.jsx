@@ -92,7 +92,7 @@ export default function StickyHeadTable() {
   };
 
   useEffect(() => {
-    const newData = logs.map((log) =>
+    const newData = logs?.map((log) =>
       createData(
         log.meta.timestamp,
         log.meta.transactionId,
@@ -128,7 +128,7 @@ export default function StickyHeadTable() {
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
             <TableRow>
-              {columns.map((column) => (
+              {columns?.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
@@ -141,8 +141,8 @@ export default function StickyHeadTable() {
           </TableHead>
           <TableBody>
             {data
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
+              ?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              ?.map((row) => {
                 return (
                   <TableRow
                     hover
@@ -150,7 +150,7 @@ export default function StickyHeadTable() {
                     tabIndex={-1}
                     key={row.transactionID}
                   >
-                    {columns.map((column) => {
+                    {columns?.map((column) => {
                       const value = row[column.id];
                       return (
                         <TableCell key={column.id} align={column.align}>

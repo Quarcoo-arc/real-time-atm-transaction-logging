@@ -9,7 +9,7 @@ const cards = [
 const CardsList = () => {
   return (
     <CardsListWrapper>
-      {cards.map((card, idx) => (
+      {cards?.map((card, idx) => (
         <Card key={idx} type={card.type} number={card.number} />
       ))}
     </CardsListWrapper>
