@@ -24,7 +24,7 @@ require("dotenv").config();
 
 const app = express();
 
-const port = 5000;
+const port = process.env.PORT || 5000;
 
 const http = require("http");
 const server = http.createServer(app);
