@@ -59,20 +59,20 @@ const Global = model("Global", globalSchema);
 
 const globalVarsExist = async () => {
   const global = await Global.findById("globalVars").exec();
-  console.log(global);
-  return global;
+  if (!global) {
+    console.log("We came here: globals do not exist");
+    const globalVars = new Global({
+      _id: "globalVars",
+      currentError: NO_ERROR,
+      activeStaffEmail: "michaelquarcoo04@gmail.com",
+      activeStaffName: "Michael Quarcoo",
+      atmBalance: 4500.45,
+    });
+    globalVars.save();
+  }
 };
 
-if (!Promise.resolve(globalVarsExist())) {
-  const globalVars = new Global({
-    _id: "globalVars",
-    currentError: NO_ERROR,
-    activeStaffEmail: "michaelquarcoo04@gmail.com",
-    activeStaffName: "Michael Quarcoo",
-    atmBalance: 4500.45,
-  });
-  globalVars.save();
-}
+globalVarsExist();
 
 const userSchema = new Schema({
   accountNumber: String,
@@ -108,12 +108,16 @@ const counterSchema = new Schema({
 
 const Counter = model("Counter", counterSchema);
 
-const counterExists = Promise.resolve(Counter.findById("sequence").exec());
+const checkIfCounterExits = async () => {
+  const counterExists = await Counter.findById("sequence").exec();
+  if (!counterExists) {
+    console.log("We came here: counter does not exist");
+    const counter = new Counter({ _id: "sequence", val: 100000 });
+    counter.save();
+  }
+};
 
-if (!counterExists) {
-  const counter = new Counter({ _id: "sequence", val: 100000 });
-  counter.save();
-}
+checkIfCounterExits();
 
 const getNextSequenceVal = async (seq_id) => {
   const sequenceDoc = await Counter.findById(seq_id).exec();
