@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { AuthPage } from "@/sharedPages";
-import registerImg from "../../../../public/register_img.jpg";
+import registerImg from "/public/register_img.jpg";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import { FormButton, Heading, OutlinedTextField } from "@/components";
 import ArrowBackIosRoundedIcon from "@mui/icons-material/ArrowBackIosRounded";

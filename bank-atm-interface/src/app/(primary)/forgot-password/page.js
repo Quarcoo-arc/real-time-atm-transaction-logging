@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { AuthPage } from "@/sharedPages";
-import forgotPasswordImg from "../../../../public/forgot_password_img.jpg";
+import forgotPasswordImg from "/public/forgot_password_img.jpg";
 import {
   DialogueBox,
   FormButton,

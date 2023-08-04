@@ -1,7 +1,7 @@
 "use client";
 import { AuthPage } from "@/sharedPages";
 import React, { useEffect } from "react";
-import registrationSuccess from "../../../../public/successful_registration_img.jpg";
+import registrationSuccess from "/public/successful_registration_img.jpg";
 import { ContentWrapper } from "@/components/Wrappers";
 import { FormButton, Heading } from "@/components";
 import { WrapAndLeft } from "./page.styled";

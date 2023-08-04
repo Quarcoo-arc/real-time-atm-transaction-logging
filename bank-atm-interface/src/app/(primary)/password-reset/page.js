@@ -1,7 +1,7 @@
 "use client";
 import { AuthPage } from "@/sharedPages";
 import React, { useEffect, useState } from "react";
-import passwordResetImg from "../../../../../public/reset_password_img.jpg";
+import passwordResetImg from "/public/reset_password_img.jpg";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
 import {

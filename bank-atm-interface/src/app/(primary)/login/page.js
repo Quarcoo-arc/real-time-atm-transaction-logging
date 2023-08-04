@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { AuthPage } from "@/sharedPages";
-import loginImg from "../../../../public/login_img.jpg";
+import loginImg from "/public/login_img.jpg";
 import { FormButton, Heading, OutlinedTextField } from "@/components";
 import Box from "@mui/material/Box";
 import * as yup from "yup";
