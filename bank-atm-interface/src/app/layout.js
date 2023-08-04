@@ -19,10 +19,10 @@ const dancing_script = Dancing_Script({
   display: "swap",
 });
 
-export const metadata = {
-  title: "Bank ATM",
-  description: "Banking you can trust!",
-};
+// export const metadata = {
+//   title: "Bank ATM",
+//   description: "Banking you can trust!",
+// };
 
 export default function RootLayout({ children }) {
   return (
