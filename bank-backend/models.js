@@ -7,13 +7,13 @@ const uniqueValidator = require("mongoose-unique-validator");
 require("mongoose-type-email");
 require("dotenv").config();
 
-const connectDB = () => {
+const connectDB = async () => {
   try {
     const conn = mongoose.connect(process.env.mongodburl, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log(`MongoDB Connected: ${conn.connection.host}`);
+    console.log(`MongoDB Connected`);
   } catch (error) {
     console.log(error);
     process.exit(1);
@@ -59,6 +59,7 @@ const Global = model("Global", globalSchema);
 
 const globalVarsExist = async () => {
   const global = await Global.findById("globalVars").exec();
+  console.log(global);
   return global;
 };
 
@@ -81,7 +82,7 @@ const userSchema = new Schema({
     unique: true,
     work: mongoose.SchemaTypes.Email,
     home: mongoose.SchemaTypes.Email,
-  }, // Todo: Check if email type is correct
+  },
   password: { type: String, required: true, bcrypt: true }, // Should be encrypted
   name: { type: String, required: true },
   accountBalance: { type: Number, default: 0, get: getAmount, set: setAmount },
