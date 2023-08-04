@@ -167,7 +167,7 @@ export default function StickyHeadTable() {
       <TablePagination
         rowsPerPageOptions={[5, 10, 20, 50, 100]}
         component="div"
-        count={data.length}
+        count={data ? data.length : 0}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}
