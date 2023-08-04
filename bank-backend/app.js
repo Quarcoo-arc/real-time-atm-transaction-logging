@@ -1051,16 +1051,19 @@ app.post("/logs/filter", async (req, res) => {
   try {
     const searchQuery = req.body.searchString;
     const regex = new RegExp(searchQuery, "i");
-    const isValidDate = !isNaN(Date.parse(searchQuery));
+    const isValidDate =
+      (searchQuery.length === 4 ||
+        (searchQuery.length > 4 && searchQuery.match(/-|\//))) &&
+      !isNaN(Date.parse(searchQuery));
     const data = await TransactionLogs.find(
       isValidDate
         ? { "meta.timestamp": { $gte: new Date(searchQuery) } }
         : {
             $or: [
-              { "meta.accountNumber": regex },
               {
-                $where: `function() {return this.meta.transactionId.toString().match(/${+searchQuery}/) != null;}`,
+                "meta.accountNumber": regex,
               },
+              { "meta.transactionId": { $gte: +searchQuery } },
               { "meta.amount": { $gte: +searchQuery } },
               { "meta.status": regex },
               { "meta.type": regex },
