@@ -60,7 +60,6 @@ const Global = model("Global", globalSchema);
 const globalVarsExist = async () => {
   const global = await Global.findById("globalVars").exec();
   if (!global) {
-    console.log("We came here: globals do not exist");
     const globalVars = new Global({
       _id: "globalVars",
       currentError: NO_ERROR,
@@ -111,7 +110,6 @@ const Counter = model("Counter", counterSchema);
 const checkIfCounterExits = async () => {
   const counterExists = await Counter.findById("sequence").exec();
   if (!counterExists) {
-    console.log("We came here: counter does not exist");
     const counter = new Counter({ _id: "sequence", val: 100000 });
     counter.save();
   }
