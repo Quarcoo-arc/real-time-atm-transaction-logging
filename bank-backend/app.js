@@ -7,6 +7,7 @@ const {
   NO_ERROR,
   TransactionLogs,
   ResetToken,
+  connectDB,
 } = require("./models.js");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
@@ -1084,6 +1085,8 @@ app.use((err, req, res, next) => {
   res.json({ success: false, error: err });
 });
 
-server.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
+connectDB().then(() => {
+  server.listen(port, () => {
+    console.log(`App is listening on port ${port}`);
+  });
 });

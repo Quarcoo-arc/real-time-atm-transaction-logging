@@ -7,10 +7,19 @@ const uniqueValidator = require("mongoose-unique-validator");
 require("mongoose-type-email");
 require("dotenv").config();
 
-mongoose.connect(process.env.mongodburl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const connectDB = () => {
+  try {
+    const conn = mongoose.connect(process.env.mongodburl, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.log(error);
+    process.exit(1);
+  }
+};
+
 const db = mongoose.connection;
 
 const NO_ERROR = "NO_ERROR";
@@ -145,6 +154,7 @@ module.exports = {
   TransactionLogs,
   ResetToken,
   db,
+  connectDB,
   getNextSequenceVal,
   ERRORS,
   NO_ERROR,
