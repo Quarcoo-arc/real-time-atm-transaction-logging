@@ -9,21 +9,21 @@ const CardDeck = () => {
     "No Error",
     "Transaction Timeout",
     "Internal Server Error",
-    "Connection Disconnected",
+    "Dispenser Error",
   ];
 
   const errorsMap = {
     NO_ERROR: cardsContentArr[0],
     TRANSACTION_TIMEOUT: cardsContentArr[1],
     INTERNAL_SERVER_ERROR: cardsContentArr[2],
-    CONNECTION_DISCONNECTED: cardsContentArr[3],
+    DISPENSER_ERROR: cardsContentArr[3],
   };
 
   const errorsMapReverse = {
     [cardsContentArr[0]]: "NO_ERROR",
     [cardsContentArr[1]]: "TRANSACTION_TIMEOUT",
     [cardsContentArr[2]]: "INTERNAL_SERVER_ERROR",
-    [cardsContentArr[3]]: "CONNECTION_DISCONNECTED",
+    [cardsContentArr[3]]: "DISPENSER_ERROR",
   };
   const [selectedCard, setSelectedCard] = useState(cardsContentArr[0]); // TODO: Move this into a context
 
