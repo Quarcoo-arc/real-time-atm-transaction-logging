@@ -13,11 +13,6 @@ export const LogsContextProvider = ({ children }) => {
   const [total, setTotal] = useState(0);
   const [successful, setSuccessful] = useState(0);
   const [failed, setFailed] = useState(0);
-  const [statistics, setStatistics] = useState({
-    total: 0,
-    successful: 0,
-    failed: 0,
-  });
 
   const loadLogs = async () => {
     try {
