@@ -10,12 +10,23 @@ export const LogsContextProvider = ({ children }) => {
   const [searchString, setSearchString] = useState("");
   const [newLogs, setNewLogs] = useState([]);
   const [staffInfo, setStaffInfo] = useState({ name: "", email: "" });
+  const [total, setTotal] = useState(0);
+  const [successful, setSuccessful] = useState(0);
+  const [failed, setFailed] = useState(0);
+  const [statistics, setStatistics] = useState({
+    total: 0,
+    successful: 0,
+    failed: 0,
+  });
 
   const loadLogs = async () => {
     try {
       const result = await fetch(`${BASE_URL}/logs`);
       const data = await result.json();
       setLogs(data.data);
+      setTotal(data.count);
+      setSuccessful(data.passed);
+      setFailed(data.failed);
     } catch (error) {
       console.log(error);
     }
@@ -99,10 +110,20 @@ export const LogsContextProvider = ({ children }) => {
       console.log("Made socket connection", socket.id);
     });
     socket.on("transaction", (msg) => {
-      console.log(msg);
-      !logs || (logs[0] && msg.transactionId !== logs[0].meta.transactionId)
-        ? setNewLogs((prev) => [{ meta: msg }, ...prev])
-        : null;
+      if (
+        !newLogs ||
+        !newLogs.length ||
+        (newLogs[0] && msg.transactionId !== newLogs[0].meta.transactionId)
+      ) {
+        setNewLogs((prev) => [{ meta: msg }, ...prev]);
+        if (msg.status === "failed") {
+          setTotal((prev) => prev + 1);
+          setFailed((prev) => prev + 1);
+        } else {
+          setTotal((prev) => prev + 1);
+          setSuccessful((prev) => prev + 1);
+        }
+      }
     });
     socket.on("disconnect", function () {
       console.log("disconnect");
@@ -110,6 +131,8 @@ export const LogsContextProvider = ({ children }) => {
     socket.on("connect_error", function (err) {
       console.log("connection errror", err);
     });
+
+    return () => socket.disconnect();
   }, []);
 
   return (
@@ -123,6 +146,9 @@ export const LogsContextProvider = ({ children }) => {
         setSearchString,
         changeStaffInfo,
         staffInfo,
+        successful,
+        failed,
+        total,
       }}
     >
       {children}

@@ -1041,7 +1041,16 @@ app.get("/logs", async (req, res) => {
     const data = await TransactionLogs.find({})
       .sort({ "meta.timestamp": -1 })
       .toArray();
-    res.json({ success: true, count: data.length, data });
+    const failed = await TransactionLogs.countDocuments({
+      "meta.status": "failed",
+    });
+    res.json({
+      success: true,
+      count: data.length,
+      failed,
+      passed: data.length - failed,
+      data,
+    });
   } catch (error) {
     res.json({ success: false, error: error.stack });
   }

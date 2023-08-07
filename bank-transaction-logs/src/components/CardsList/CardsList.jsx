@@ -1,17 +1,17 @@
 import { CardsListWrapper } from "./CardsList.styled";
 import Card from "../Card/Card";
+import { useLogs } from "../../contexts/LogsContext";
+import { useEffect, useState } from "react";
 
-const cards = [
-  { type: "total", number: 5000 },
-  { type: "successful", number: 4000 },
-  { type: "failed", number: 1000 },
-];
+const cards = ["total", "successful", "failed"];
 const CardsList = () => {
+  const { successful, failed, total } = useLogs();
+
   return (
     <CardsListWrapper>
-      {cards?.map((card, idx) => (
-        <Card key={idx} type={card.type} number={card.number} />
-      ))}
+      <Card key={"total"} type={"total"} number={total} />
+      <Card key={"successful"} type={"successful"} number={successful} />
+      <Card key={"failed"} type={"failed"} number={failed} />
     </CardsListWrapper>
   );
 };
