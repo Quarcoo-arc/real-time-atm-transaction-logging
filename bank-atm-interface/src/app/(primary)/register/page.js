@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AuthPage } from "@/sharedPages";
 import registerImg from "/public/register_img.jpg";
 import { ContentWrapper, WrapAndCenter } from "@/components/Wrappers";
@@ -18,7 +18,7 @@ const SignUp = () => {
   const [secondForm, setSecondForm] = useState(false);
   const [displayAlert, setDisplayAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { registerUserHandler } = useUser();
+  const { registerUserHandler, setIsLoading } = useUser();
   const router = useRouter();
   const validationSchema = yup.object({
     email: yup
@@ -72,6 +72,7 @@ const SignUp = () => {
     },
     validationSchema: secondValidationSchema,
     onSubmit: async (values) => {
+      setIsLoading(true);
       const result = await registerUserHandler({
         email: userInfo.email,
         password: userInfo.password,
@@ -82,6 +83,7 @@ const SignUp = () => {
       if (result.success) {
         router.push("/register/success");
       } else {
+        setIsLoading(false);
         setDisplayAlert(true);
         setErrorMessage(
           result.error && result.error.message
@@ -93,6 +95,11 @@ const SignUp = () => {
       }
     },
   });
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
   return (
     <AuthPage
       btnType="login"
@@ -213,7 +220,7 @@ const SignUp = () => {
             ) : (
               <FormButton type="submit">Next</FormButton>
             )}
-            <Link href="/login">
+            <Link href="/login" onClick={() => setIsLoading(true)}>
               Already have an account? <span>Sign In</span>
             </Link>
           </WrapAndCenter>

@@ -57,7 +57,7 @@ const ATMHome = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
   const [username, setUsername] = useState("");
   const router = useRouter();
-  const { user, checkAuth } = useContext(UserContext);
+  const { user, checkAuth, setIsLoading } = useContext(UserContext);
 
   useEffect(() => {
     setUsername(user && user.name ? user.name?.split(" ")[0] : "");
@@ -65,6 +65,7 @@ const ATMHome = () => {
 
   useEffect(() => {
     checkAuth();
+    setIsLoading(false);
   }, []);
 
   return (
@@ -80,7 +81,10 @@ const ATMHome = () => {
             description={el.description}
             onClick={
               el.redirectUrl
-                ? () => router.push(el.redirectUrl)
+                ? () => {
+                    setIsLoading(true);
+                    router.push(el.redirectUrl);
+                  }
                 : () => setOpenDialogue(true)
             }
           />

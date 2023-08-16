@@ -10,6 +10,7 @@ import {
 import { FilledButton } from "@/components/Buttons/Buttons";
 import { useUser } from "../UserContext";
 import { useIdleTimer } from "react-idle-timer";
+import LoadingSpinner from "@/components/LoadingSpinner/LoadingSpinner";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="left" ref={ref} {...props} />;
@@ -87,7 +88,7 @@ const PrimaryLayout = ({ children }) => {
   const [remainingTime, setRemainingTime] = useState(timeout);
   const [openTimeoutDialogue, setOpenTimeoutDialogue] = useState(false);
   const [timeTillPrompt, setTimeTillPrompt] = useState(0);
-  const { logoutHandler, authToken } = useUser();
+  const { logoutHandler, authToken, isLoading } = useUser();
   const promptBeforeIdle = 1000 * 30;
 
   useEffect(() => {
@@ -136,6 +137,7 @@ const PrimaryLayout = ({ children }) => {
         extendSession={extendSession}
         remainingTime={remainingTime}
       />
+      <LoadingSpinner open={isLoading} />
       {children}
     </section>
   );

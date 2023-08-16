@@ -14,6 +14,7 @@ export const UserContextProvider = ({ children }) => {
   const [oldPin, setOldPin] = useState("");
   const [withdrawalInfo, setWithdrawalInfo] = useState({});
   const [depositInfo, setDepositInfo] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
 
   const router = useRouter();
   const pathname = usePathname();
@@ -90,12 +91,14 @@ export const UserContextProvider = ({ children }) => {
 
   const checkPINEntry = async () => {
     if (!(await verifyPIN())) {
+      setIsLoading(true);
       setRedirectUrl(pathname);
       router.push("/atm/auth");
     }
   };
 
   const logoutHandler = () => {
+    setIsLoading(true);
     setAuthToken("");
     setUser({});
     router.push("/login");
@@ -103,6 +106,7 @@ export const UserContextProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
+      setIsLoading(true);
       const result = await getDataHandler(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/verify-token`
       );
@@ -139,6 +143,8 @@ export const UserContextProvider = ({ children }) => {
         setWithdrawalInfo,
         depositInfo,
         setDepositInfo,
+        isLoading,
+        setIsLoading,
       }}
     >
       {children}

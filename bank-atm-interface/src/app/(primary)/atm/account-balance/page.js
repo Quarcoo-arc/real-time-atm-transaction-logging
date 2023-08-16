@@ -5,8 +5,14 @@ import { AccountBalText } from "@/components/DepositWithdrawalComponents/Deposit
 import { useUser } from "@/app/UserContext";
 
 const AccountBalance = () => {
-  const { postDataHandler, currencyFormatter, checkPINEntry, pin, setPin } =
-    useUser();
+  const {
+    postDataHandler,
+    currencyFormatter,
+    checkPINEntry,
+    pin,
+    setPin,
+    setIsLoading,
+  } = useUser();
   const [accountBalance, setAccountBalance] = useState(0);
   const [displayAlert, setDisplayAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -21,6 +27,7 @@ const AccountBalance = () => {
   useEffect(() => {
     const func = async () => {
       try {
+        setIsLoading(true);
         const result = await postDataHandler(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/account-balance`,
           {
@@ -28,14 +35,17 @@ const AccountBalance = () => {
           }
         );
         if (result.success) {
+          setIsLoading(false);
           setAccountBalance(result.data.accountBalance);
         } else {
+          setIsLoading(false);
           setDisplayAlert(true);
           setErrorMessage(
             result.message ? result.message : "Something went wrong."
           );
         }
       } catch (error) {
+        setIsLoading(false);
         setDisplayAlert(true);
         setErrorMessage(
           error.message

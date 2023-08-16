@@ -9,12 +9,19 @@ import React, { useEffect, useState } from "react";
 
 const DepositMoney = () => {
   const [amount, setAmount] = useState("");
-  const { checkPINEntry, setPin, pin, postDataHandler, setDepositInfo } =
-    useUser();
+  const {
+    checkPINEntry,
+    setPin,
+    pin,
+    postDataHandler,
+    setDepositInfo,
+    setIsLoading,
+  } = useUser();
   const router = useRouter();
 
   useEffect(() => {
     checkPINEntry();
+    setIsLoading(false);
     return () => {
       setPin("");
     };
@@ -22,6 +29,7 @@ const DepositMoney = () => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     if (amount) {
       try {
         const result = await postDataHandler(

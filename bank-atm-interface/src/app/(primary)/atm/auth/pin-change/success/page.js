@@ -1,9 +1,16 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { SubPage } from "@/sharedPages";
 import { Text } from "@/components/Wrappers";
+import { useUser } from "@/app/UserContext";
 
 const SuccessfulPINChange = () => {
+  const { setIsLoading } = useUser();
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
+
   return (
     <SubPage
       heading="Operation Complete"

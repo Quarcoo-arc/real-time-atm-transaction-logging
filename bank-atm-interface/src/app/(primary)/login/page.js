@@ -15,7 +15,7 @@ import { useUser } from "../../UserContext";
 const Login = () => {
   const [displayAlert, setDisplayAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const { loginUserHandler } = useUser();
+  const { loginUserHandler, setIsLoading } = useUser();
   const router = useRouter();
 
   const validationSchema = yup.object({
@@ -36,6 +36,7 @@ const Login = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      setIsLoading(true);
       const result = await loginUserHandler({
         email: values.email,
         password: values.password,
@@ -44,6 +45,7 @@ const Login = () => {
       if (result.success) {
         router.push("/atm");
       } else {
+        setIsLoading(false);
         setDisplayAlert(true);
         setErrorMessage(
           result.message
@@ -55,6 +57,10 @@ const Login = () => {
       }
     },
   });
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   return (
     <AuthPage
@@ -102,11 +108,13 @@ const Login = () => {
               error={formik.touched.password && Boolean(formik.errors.password)}
               helperText={formik.touched.password && formik.errors.password}
             />
-            <Link href="/forgot-password">Forgot Password?</Link>
+            <Link href="/forgot-password" onClick={() => setIsLoading(true)}>
+              Forgot Password?
+            </Link>
           </Wrapper>
           <WrapAndCenter>
             <FormButton type="submit">Sign In</FormButton>
-            <Link href="/register">
+            <Link href="/register" onClick={() => setIsLoading(true)}>
               Don’t have an account? <span>Sign Up</span>
             </Link>
           </WrapAndCenter>

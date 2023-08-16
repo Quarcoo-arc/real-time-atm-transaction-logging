@@ -8,10 +8,12 @@ import {
 import { useUser } from "@/app/UserContext";
 
 const DepositFailure = () => {
-  const { depositInfo, setDepositInfo } = useUser();
+  const { depositInfo, setDepositInfo, setIsLoading } = useUser();
 
   useEffect(() => {
+    setIsLoading(false);
     if (!depositInfo || depositInfo.success) {
+      setIsLoading(true);
       router.push("/atm");
     }
     return () => {

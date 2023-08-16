@@ -9,12 +9,15 @@ import { useUser } from "@/app/UserContext";
 import { useRouter } from "next/navigation";
 
 const DepositSuccess = () => {
-  const { depositInfo, currencyFormatter, setDepositInfo } = useUser();
+  const { depositInfo, currencyFormatter, setDepositInfo, setIsLoading } =
+    useUser();
   const [data, setData] = useState({});
   const router = useRouter();
 
   useEffect(() => {
+    setIsLoading(false);
     if (!depositInfo || !depositInfo.success) {
+      setIsLoading(true);
       router.push("/atm");
     }
   }, []);

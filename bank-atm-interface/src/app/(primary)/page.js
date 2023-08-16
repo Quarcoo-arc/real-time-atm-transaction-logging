@@ -16,12 +16,13 @@ import { useEffect, useState } from "react";
 export default function Home() {
   const [userInfo, setUserInfo] = useState({ email: "", name: "" });
   const router = useRouter();
-  const { user } = useUser();
+  const { user, setIsLoading } = useUser();
   useEffect(() => {
     setUserInfo({
       email: user.email,
       name: user.name,
     });
+    setIsLoading(false);
   }, [JSON.stringify(user)]);
 
   return (
@@ -38,7 +39,10 @@ export default function Home() {
             Fast, reliable & affordable <span>banking</span> you can trust
           </UpperCaseText>
           <Button
-            onClick={() => router.push("/register")}
+            onClick={() => {
+              setIsLoading(true);
+              router.push("/register");
+            }}
             sx={{
               width: "fit-content",
               borderRadius: "1rem",

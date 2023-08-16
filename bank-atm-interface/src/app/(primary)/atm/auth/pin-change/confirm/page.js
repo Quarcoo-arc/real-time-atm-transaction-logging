@@ -18,10 +18,12 @@ const ConfirmPIN = () => {
     setPin,
     pin,
     checkPINEntry,
+    setIsLoading,
   } = useUser();
 
   useEffect(() => {
     if (!newPin) {
+      setIsLoading(true);
       router.push("/atm/auth/pin-change");
     }
     return () => {
@@ -33,7 +35,7 @@ const ConfirmPIN = () => {
     setPin(oldPin);
 
     checkPINEntry();
-
+    setIsLoading(false);
     return () => {
       setOldPin("");
       setPin("");

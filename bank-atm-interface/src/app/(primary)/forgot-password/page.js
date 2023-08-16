@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AuthPage } from "@/sharedPages";
 import forgotPasswordImg from "/public/forgot_password_img.jpg";
 import {
@@ -20,7 +20,7 @@ import { useUser } from "../../UserContext";
 const ForgotPassword = () => {
   const [openDialogue, setOpenDialogue] = useState(false);
   const [error, setError] = useState(false);
-  const { postDataHandler } = useUser();
+  const { postDataHandler, setIsLoading } = useUser();
   const validationSchema = yup.object({
     email: yup
       .string("Enter your email")
@@ -34,6 +34,7 @@ const ForgotPassword = () => {
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
+      setIsLoading(true);
       const result = await postDataHandler(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/forgot-password`,
         {
@@ -42,13 +43,19 @@ const ForgotPassword = () => {
       );
 
       if (!result.success) {
+        setIsLoading(false);
         setError(true);
         setOpenDialogue(true);
       } else {
+        setIsLoading(false);
         setOpenDialogue(true);
       }
     },
   });
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   return (
     <AuthPage btnType="register" src={forgotPasswordImg}>
@@ -83,7 +90,7 @@ const ForgotPassword = () => {
           />
           <WrapAndCenter>
             <FormButton type="submit">Send</FormButton>
-            <Link href="/login">
+            <Link href="/login" onClick={() => setIsLoading(true)}>
               Back to <span>Sign In</span>
             </Link>
           </WrapAndCenter>
@@ -100,7 +107,7 @@ const ForgotPassword = () => {
         }
         footer={
           <ButtonWrapper>
-            <BackLink href="/login">
+            <BackLink href="/login" onClick={() => setIsLoading(true)}>
               <ChevronLeftRounded /> <p>Back to Sign In</p>
             </BackLink>
             {error ? (

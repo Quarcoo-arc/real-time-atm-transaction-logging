@@ -11,6 +11,7 @@ import Background from "./Background/Background";
 import ConfirmLogutPopUp from "./ConfirmLogoutPopUp/ConfirmLogutPopUp";
 import AmountEntryTextField from "./AmountEntryTextField/AmountEntryTextField";
 import AlertToast from "./AlertToast/AlertToast";
+import LoadingSpinner from "./LoadingSpinner/LoadingSpinner";
 
 export {
   Logo,
@@ -26,4 +27,5 @@ export {
   ConfirmLogutPopUp,
   AmountEntryTextField,
   AlertToast,
+  LoadingSpinner,
 };

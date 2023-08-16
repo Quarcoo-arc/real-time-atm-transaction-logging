@@ -9,16 +9,19 @@ import { useUser } from "@/app/UserContext";
 import { useRouter } from "next/navigation";
 
 const WithdrawalSuccess = () => {
-  const { withdrawalInfo, currencyFormatter, setWithdrawalInfo } = useUser();
+  const { withdrawalInfo, currencyFormatter, setWithdrawalInfo, setIsLoading } =
+    useUser();
   const [data, setData] = useState({});
   const router = useRouter();
   useEffect(() => {
     if (!withdrawalInfo || !withdrawalInfo.success) {
+      setIsLoading(true);
       router.push("/atm");
     }
   }, []);
 
   useEffect(() => {
+    setIsLoading(false);
     withdrawalInfo.success && setData({ ...withdrawalInfo });
 
     return () => {

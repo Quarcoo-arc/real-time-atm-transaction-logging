@@ -12,15 +12,18 @@ const Auth = () => {
   const { postDataHandler } = useContext(UserContext);
   const router = useRouter();
 
-  const { redirectUrl, setPin, setRedirectUrl } = useUser();
+  const { redirectUrl, setPin, setRedirectUrl, setIsLoading } = useUser();
   useEffect(() => {
+    setIsLoading(false);
     if (!redirectUrl) {
+      setIsLoading(true);
       router.push("/atm");
     }
   }, []);
 
   const checkPIN = async (val) => {
     try {
+      setIsLoading(true);
       const result = await postDataHandler(
         `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/verify-pin`,
         {
@@ -33,9 +36,11 @@ const Auth = () => {
         setRedirectUrl("");
         router.push(redirectTo);
       } else {
+        setIsLoading(false);
         setOpenDialogue(true);
       }
     } catch (error) {
+      setIsLoading(false);
       setOpenDialogue(true);
     }
   };
@@ -54,7 +59,13 @@ const Auth = () => {
         body="Please try again. Or visit any of our branches to reset your PIN."
         footer={
           <>
-            <FilledButton type="warning" onClick={() => router.back()}>
+            <FilledButton
+              type="warning"
+              onClick={() => {
+                setIsLoading(true);
+                router.back();
+              }}
+            >
               Cancel
             </FilledButton>
             <FilledButton onClick={() => setOpenDialogue(false)}>

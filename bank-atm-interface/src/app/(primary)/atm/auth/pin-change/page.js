@@ -6,17 +6,20 @@ import { useRouter } from "next/navigation";
 
 const PINChange = () => {
   const [otp, setOtp] = useState("");
-  const { checkPINEntry, setPin, setNewPin, pin, setOldPin } = useUser();
+  const { checkPINEntry, setPin, setNewPin, pin, setOldPin, setIsLoading } =
+    useUser();
   const router = useRouter();
 
   useEffect(() => {
     checkPINEntry();
+    setIsLoading(false);
     return () => {
       setPin("");
     };
   }, []);
 
   const handleComplete = (val) => {
+    setIsLoading(true);
     setNewPin(val);
     setOldPin(pin);
     router.push("/atm/auth/pin-change/confirm");

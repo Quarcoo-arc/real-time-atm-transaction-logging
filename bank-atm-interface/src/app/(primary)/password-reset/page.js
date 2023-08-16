@@ -31,7 +31,7 @@ const PasswordReset = () => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const { postDataHandler } = useUser();
+  const { postDataHandler, setIsLoading } = useUser();
 
   const token = searchParams.get("token");
 
@@ -52,6 +52,7 @@ const PasswordReset = () => {
     },
     validationSchema,
     onSubmit: async (values) => {
+      setIsLoading(true);
       if (errorMessage || loading) {
         return router.push("/login");
       }
@@ -64,9 +65,11 @@ const PasswordReset = () => {
       );
 
       if (result.success) {
+        setIsLoading(false);
         setOpenDialogue(true);
         formik.resetForm();
       } else {
+        setIsLoading(false);
         setResetError(result.message);
         setOpenDialogue(true);
       }
@@ -74,6 +77,7 @@ const PasswordReset = () => {
   });
 
   useEffect(() => {
+    setIsLoading(false);
     if (!token) {
       setLoading(false);
       setErrorMessage("Operation Failed");
@@ -152,7 +156,7 @@ const PasswordReset = () => {
             ) : (
               <>
                 <FormButton type="submit">Reset</FormButton>
-                <Link href="/login">
+                <Link href="/login" onClick={() => setIsLoading(true)}>
                   Back to <span>Sign In</span>
                 </Link>
               </>
@@ -171,7 +175,7 @@ const PasswordReset = () => {
         }
         footer={
           <ButtonWrapper>
-            <BackLink href="/login">
+            <BackLink href="/login" onClick={() => setIsLoading(true)}>
               <ChevronLeftRounded /> <p>Back to Sign In</p>
             </BackLink>
             {resetError ? (

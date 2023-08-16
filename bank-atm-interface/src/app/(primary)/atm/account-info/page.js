@@ -8,8 +8,14 @@ import { SubPage } from "@/sharedPages";
 import React, { useEffect, useState } from "react";
 
 const AccountInfo = () => {
-  const { postDataHandler, currencyFormatter, checkPINEntry, pin, setPin } =
-    useUser();
+  const {
+    postDataHandler,
+    currencyFormatter,
+    checkPINEntry,
+    pin,
+    setPin,
+    setIsLoading,
+  } = useUser();
   const [userInfo, setUserInfo] = useState({});
   const [displayAlert, setDisplayAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -24,6 +30,7 @@ const AccountInfo = () => {
   useEffect(() => {
     const func = async () => {
       try {
+        setIsLoading(true);
         const result = await postDataHandler(
           `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/account-info`,
           {
@@ -31,14 +38,17 @@ const AccountInfo = () => {
           }
         );
         if (result.success) {
+          setIsLoading(false);
           setUserInfo(result.data);
         } else {
+          setIsLoading(false);
           setDisplayAlert(true);
           setErrorMessage(
             result.message ? result.message : "Something went wrong."
           );
         }
       } catch (error) {
+        setIsLoading(false);
         setDisplayAlert(true);
         setErrorMessage(
           error.message

@@ -17,15 +17,18 @@ const GridItemWrapper = styled.div`
 const WithdrawalError = () => {
   const [error, setError] = useState("");
   const [balance, setBalance] = useState(0);
-  const { withdrawalInfo, currencyFormatter, setWithdrawalInfo } = useUser();
+  const { withdrawalInfo, currencyFormatter, setWithdrawalInfo, setIsLoading } =
+    useUser();
 
   useEffect(() => {
     if (!withdrawalInfo || withdrawalInfo.success) {
+      setIsLoading(true);
       router.push("/atm");
     }
   }, []);
 
   useEffect(() => {
+    setIsLoading(false);
     if (withdrawalInfo.success === false) {
       setError(withdrawalInfo.error);
       setBalance(withdrawalInfo.data ? withdrawalInfo.data.accountBalance : 0);

@@ -10,9 +10,10 @@ import { useUser } from "@/app/UserContext";
 
 const SuccessfulRegistration = () => {
   const router = useRouter();
-  const { checkAuth } = useUser();
+  const { checkAuth, setIsLoading } = useUser();
   useEffect(() => {
     checkAuth();
+    setIsLoading(false);
   }, []);
 
   return (
