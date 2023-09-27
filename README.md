@@ -2,6 +2,8 @@
 
 A simulation of real-time transaction logging for Automated Teller Machines (ATMs).
 
+<br>
+
 ## Getting Started
 
 This project was built with [Next.js](https://nextjs.org/), [React](https://react.dev/), [Node.js](https://nodejs.org/en) and [Express](https://expressjs.com/).
