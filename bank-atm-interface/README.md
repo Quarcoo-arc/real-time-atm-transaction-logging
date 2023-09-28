@@ -46,6 +46,8 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 3. In order for the functionalities to work as expected, you would need to have the [`backend`](../bank-backend/README.md) running.
 
+<br>
+
 ## Deployment
 
 Here's a link to the live [web application](https://bank-atm-banking.vercel.app/)
