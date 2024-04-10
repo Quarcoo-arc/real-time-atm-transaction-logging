@@ -32,4 +32,4 @@ userSchema.plugin(uniqueValidator);
 
 const User = model("User", userSchema);
 
-export default User;
+module.exports = User;

@@ -28,4 +28,4 @@ resetTokenSchema.plugin(uniqueValidator);
 
 const ResetToken = model("ResetToken", resetTokenSchema);
 
-export default ResetToken;
+module.exports = ResetToken;

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
-import { ERRORS } from "../utils/contants";
-import { getAmount, setAmount } from "../utils/helpers";
+const { ERRORS } = require("../utils/contants");
+const { getAmount, setAmount } = require("../utils/helpers");
 require("mongoose-type-email");
 
 const globalSchema = new Schema({
@@ -41,4 +41,4 @@ const globalVarsExist = async () => {
 
 globalVarsExist();
 
-export default Global;
+module.exports = Global;

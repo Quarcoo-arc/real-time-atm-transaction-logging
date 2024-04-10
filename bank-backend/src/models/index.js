@@ -1,7 +1,7 @@
-import User from "./user";
-import Counter from "./Counter";
-import ResetToken from "./ResetToken";
-import TransactionLogs from "./TransactionLogs";
-import Global from "./global";
+const User = require("./user");
+const Counter = require("./Counter");
+const ResetToken = require("./ResetToken");
+const TransactionLogs = require("./TransactionLogs");
+const Global = require("./global");
 
-export { User, Counter, ResetToken, TransactionLogs, Global };
+module.exports = { User, Counter, ResetToken, TransactionLogs, Global };

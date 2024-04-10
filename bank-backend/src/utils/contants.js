@@ -10,7 +10,7 @@ const ERRORS = {
   DISPENSER_ERROR,
 };
 
-export {
+module.exports = {
   ERRORS,
   NO_ERROR,
   TRANSACTION_TIMEOUT,

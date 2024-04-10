@@ -26,6 +26,4 @@ const getNextSequenceVal = async (seq_id) => {
   return sequenceDoc.val;
 };
 
-export default Counter;
-
-export { getNextSequenceVal };
+module.exports = { Counter, getNextSequenceVal };

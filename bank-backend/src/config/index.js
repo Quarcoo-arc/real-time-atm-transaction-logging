@@ -16,4 +16,4 @@ const connectDB = async () => {
 
 const db = mongoose.connection;
 
-export { connectDB, db };
+module.exports = { connectDB, db };
