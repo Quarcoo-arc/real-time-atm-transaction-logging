@@ -4,6 +4,16 @@ A simulation of real-time transaction logging for Automated Teller Machines (ATM
 
 <br>
 
+Research indicates that customers of various banks (especially in Africa) have issues with the reliability of ATMs.
+
+In order to improve ATM fault detection, transaction logging is key. However, some of the current systems used in logging ATM transactions are not real-time systems. This delays ATM fault detection and increases ATM downtime.
+
+This project simulates real-time transaction logging at ATMs and the notification of bank authorities in the event of ATM failure.
+
+Here is a link to a [demo of the application](https://drive.google.com/file/d/16HYuTJNgKF7H_t64_i7Ynwc_3NP7LT7i/view?usp=sharing)
+
+<br>
+
 ## Getting Started
 
 This project was built with [Next.js](https://nextjs.org/), [React](https://react.dev/), [Node.js](https://nodejs.org/en) and [Express](https://expressjs.com/).
