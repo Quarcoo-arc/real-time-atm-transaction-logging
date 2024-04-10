@@ -10,10 +10,15 @@ const ERRORS = {
   DISPENSER_ERROR,
 };
 
+const ERROR_MESSAGES = {
+  INSUFFICIENT_USER_FUNDS: "Insufficient user funds",
+};
+
 module.exports = {
   ERRORS,
   NO_ERROR,
   TRANSACTION_TIMEOUT,
   INTERNAL_SERVER_ERROR,
   DISPENSER_ERROR,
+  ERROR_MESSAGES,
 };

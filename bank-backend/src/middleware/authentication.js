@@ -1,5 +1,5 @@
 const passport = require("passport");
-const User = require("../models/User");
+const { User } = require("../models");
 
 const authenticateJWT = (req, res, next) => {
   passport.authenticate("jwt", { session: false }, (err, user) => {

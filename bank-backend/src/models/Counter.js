@@ -19,8 +19,8 @@ const checkIfCounterExits = async () => {
 
 checkIfCounterExits();
 
-const getNextSequenceVal = async (seq_id) => {
-  const sequenceDoc = await Counter.findById(seq_id).exec();
+const getNextSequenceVal = async () => {
+  const sequenceDoc = await Counter.findById("sequence").exec();
   sequenceDoc.val += 1;
   await sequenceDoc.save();
   return sequenceDoc.val;
