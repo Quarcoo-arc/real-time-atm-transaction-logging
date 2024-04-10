@@ -14,3 +14,5 @@ router.post(
 );
 
 router.post("/account-info", ensureLoggedIn, checkPIN, accountInfoService);
+
+module.exports = router;

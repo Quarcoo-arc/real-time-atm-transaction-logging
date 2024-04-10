@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const { Strategy: JwtStrategy } = require("passport-jwt");
 const routes = require("./src/routes");
+const createError = require("http-errors");
 const { socket, app, connectDB, server } = require("./src/config");
 
 require("dotenv").config();
