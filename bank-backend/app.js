@@ -1,42 +1,25 @@
-const {
-  db,
-  User,
-  getNextSequenceVal,
-  Global,
-  ERRORS,
-  NO_ERROR,
-  TransactionLogs,
-  ResetToken,
-  connectDB,
-} = require("./models.js");
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const LocalStrategy = require("passport-local");
 const bodyParser = require("body-parser");
 const nodemailer = require("nodemailer");
-const express = require("express");
 const validator = require("email-validator");
 const cors = require("cors");
-const { Strategy: JwtStrategy, ExtractJwt } = require("passport-jwt");
+const { Strategy: JwtStrategy } = require("passport-jwt");
 const { format, transports, createLogger } = require("winston");
 require("winston-mongodb");
 
 require("dotenv").config();
 
-const app = express();
-
 const port = process.env.PORT || 5000;
 
-const http = require("http");
-const server = http.createServer(app);
-const { Server } = require("socket.io");
-const io = new Server(server);
-
-const options = {};
-options.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-options.secretOrKey = process.env.JWT_SECRET;
-options.issuer = process.env.JWT_ISSUER;
-options.audience = process.env.JWT_AUDIENCE;
+const { emailTransportOptions, socket, authOptions } = require("./src/config");
+const {
+  errorNotification,
+  loginNotification,
+  registrationNotification,
+  resetPasswordNotification,
+} = require("./src/utils/templates");
 
 app.use(
   cors({
@@ -44,6 +27,7 @@ app.use(
     origin: true,
   })
 );
+
 app.use(bodyParser.json());
 
 passport.serializeUser((user, cb) => cb(null, user));
@@ -89,73 +73,8 @@ passport.use(
 
 app.use(passport.initialize());
 
-const authenticateJWT = (req, res, next) => {
-  passport.authenticate("jwt", { session: false }, (err, user) => {
-    if (err || !user) {
-      return res
-        .status(401)
-        .json({ error: "Unauthorized", message: "Authentication failed." });
-    }
-    req.user = user;
-    return next();
-  })(req, res, next);
-};
-
-const ensureLoggedIn = authenticateJWT;
-
-const authenticateLocal = (req, res, next) => {
-  passport.authenticate("local", { session: false }, (err, user) => {
-    if (err || !user) {
-      return res.status(401).json({
-        error: "Unauthorized",
-        message: "Incorrect username or password.",
-      });
-    }
-    req.user = user;
-    return next();
-  })(req, res, next);
-};
-
-const checkPIN = async (req, res, next) => {
-  try {
-    if (!req.body || !req.body.pin) {
-      res.status(400);
-      return res.json({
-        success: false,
-        error: "Bad request",
-      });
-    }
-    const user = await User.findById(req.user.id).exec();
-
-    const result = await user.verifyPinSync(req.body.pin, user.pin);
-
-    if (!result) {
-      res.status(400);
-      return res.json({
-        success: false,
-        message: "Invalid PIN",
-      });
-    }
-    next();
-  } catch (error) {
-    res.status(400);
-    return res.json({
-      success: false,
-      error: error.stack,
-    });
-  }
-};
-
 // Send email
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASSWORD,
-  },
-});
+const transporter = nodemailer.createTransport(emailTransportOptions);
 
 const logTransaction = async (info) => {
   const msg = info.message;
@@ -174,48 +93,11 @@ const logTransaction = async (info) => {
           from: "no-reply@bank.com",
           to: staffEmail,
           subject: "Bank ATM Banking - Error Notification",
-          html: `<html lang="en">
-  <head>
-    <title>Bank ATM Banking</title>
-    <style>
-      body {
-        font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
-        position: relative;
-        height: 100%;
-        font-size: 1.2rem;
-      }
-      .container {
-        width: fit-content;
-        max-width: 80%;
-        margin: 2rem auto;
-        background-color: #537188;
-        color: white;
-        padding: 4rem;
-      }
-      h1,
-      h4,
-      span {
-        color: #e1d4bb;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>😢 Oops Another Failed Transaction</h1>
-      <p>Hi ${staffName}!</p>
-      <p>
-        The transaction with ID <span>${info.transactionId}</span> failed with a
-        <span>${info.description}</span> error at the ATM.
-      </p>
-      <p>Kindly look into it ASAP.</p>
-
-      <br />
-      <p>Fast, Reliable and Affordable <span>Banking</span> You can Trust</p>
-    </div>
-  </body>
-</html>
-          
-          `,
+          html: errorNotification(
+            staffName,
+            info.transactionId,
+            info.description
+          ),
         };
         transporter.sendMail(mailOptions, function (error, info) {
           if (error) {
@@ -235,7 +117,7 @@ const logTransaction = async (info) => {
   } else {
     log.info(msg, info);
   }
-  io.emit("transaction", info);
+  socket.emit("transaction", info);
 };
 
 const transportOptions = {
@@ -256,9 +138,9 @@ const log = createLogger({
   transports: [new transports.MongoDB(transportOptions)],
 });
 
-io.on("connection", (socket) => {
-  console.log(`⚡: ${socket.id} user just connected`);
-  socket.on("disconnect", () => {
+socket.on("connection", (conn) => {
+  console.log(`⚡: ${conn.id} user just connected`);
+  conn.on("disconnect", () => {
     console.log("A user disconnected");
   });
 });
@@ -281,8 +163,8 @@ app.post("/login", authenticateLocal, async (req, res, next) => {
 
     const token = jwt.sign({ id: req.user.id }, process.env.JWT_SECRET, {
       expiresIn: 1000000,
-      issuer: options.issuer,
-      audience: options.audience,
+      issuer: authOptions.issuer,
+      audience: authOptions.audience,
     });
     res.json({
       success: true,
@@ -303,72 +185,7 @@ app.post("/login", authenticateLocal, async (req, res, next) => {
       from: "no-reply@bank.com",
       to: req.user.email,
       subject: "Bank ATM Banking",
-      html: `
-  <head>
-    <title>Bank ATM Banking</title>
-    <style>
-      body {
-        font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
-        position: relative;
-        height: 100%;
-        font-size: 1.2rem;
-      }
-      .container {
-        width: fit-content;
-        max-width: 80%;
-        margin: 2rem auto;
-        background-color: #537188;
-        color: white;
-        padding: 4rem;
-      }
-      h1,
-      h4,
-      span,
-      a {
-        color: #e1d4bb !important;
-      }
-      a {
-        text-decoration: none;
-      }
-      a:hover {
-        color: #c2993a;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Bank ATM Banking</h1>
-      <p>Hello ${req.user.name}</p>
-      <p>We noticed a new login to your account.</p>
-
-      <h4>If this was you</h4>
-      <p>You can ignore this message. There's no need to take action</p>
-
-      <h4>If this wasn't you</h4>
-      <p>Someone may have access to your password, and or PIN.</p>
-      <p>Complete these steps to secure your account:</p>
-      <ul>
-        <li>
-          Reset your password.
-          <ul>
-            <li>
-              Head over to the
-              <a href="${process.env.bank_interface_url}/forgot-password"
-                >Forgot password</a
-              >
-              page.
-            </li>
-            <li>Key in your email address</li>
-            <li>A reset link will be sent to you</li>
-          </ul>
-        </li>
-        <li>Check for any unauthorised transactions.</li>
-        <li>You may also reset your pin.</li>
-      </ul>
-    </div>
-  </body>
-  </html>
-  `,
+      html: loginNotification(req.user.name),
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
@@ -396,8 +213,8 @@ app.post("/signup", async (req, res, next) => {
 
     const token = jwt.sign({ id: result.id }, process.env.JWT_SECRET, {
       expiresIn: 1000000,
-      issuer: options.issuer,
-      audience: options.audience,
+      issuer: authOptions.issuer,
+      audience: authOptions.audience,
     });
 
     req.user = {
@@ -418,43 +235,7 @@ app.post("/signup", async (req, res, next) => {
         from: "no-reply@bank.com",
         to: result.email,
         subject: "Bank ATM Banking",
-        html: `
-  <head>
-    <title>Bank ATM Banking</title>
-    <style>
-      body {
-        font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
-        position: relative;
-        height: 100%;
-        font-size: 1.2rem;
-      }
-      .container {
-        width: fit-content;
-        max-width: 80%;
-        margin: 2rem auto;
-        background-color: #537188;
-        color: white;
-        padding: 4rem;
-      }
-      h1,
-      h4,
-      span {
-        color: #e1d4bb;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Welcome to Bank ATM Banking 🎉</h1>
-      <p>Congratulations ${result.name}!</p>
-      <p>Your account was created successfully.</p>
-
-      <br />
-      <p>Fast, Reliable and Affordable <span>Banking</span> You can Trust</p>
-    </div>
-  </body>
-</html>
-  `,
+        html: registrationNotification(result.name),
       };
 
       transporter.sendMail(mailOptions, function (error, info) {
@@ -786,58 +567,7 @@ app.post("/forgot-password", async (req, res) => {
         from: "no-reply@bank.com",
         to: user.email,
         subject: "Bank ATM Banking | Password Reset",
-        html: `
-  <head>
-    <title>Bank ATM Banking | Password Reset</title>
-    <style>
-      body {
-        font-family: "Poppins", Verdana, Geneva, Tahoma, sans-serif;
-        position: relative;
-        height: 100%;
-        font-size: 1.2rem;
-      }
-      .container {
-        width: fit-content;
-        max-width: 80%;
-        margin: 2rem auto;
-        background-color: #537188;
-        color: white;
-        padding: 4rem;
-      }
-      h1,
-      h4,
-      span,
-      a {
-        color: #e1d4bb !important;
-      }
-      a {
-        text-decoration: none;
-      }
-      a:hover {
-        color: #c2993a;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>Password Reset - Bank ATM Banking</h1>
-      <p>Hi ${user.name}</p>
-      <p>We received a password reset request for your account.</p>
-
-      <h4>If this was not you</h4>
-      <p>You can ignore this message. There's no need to take action</p>
-
-      <h4>If this was you</h4>
-      <p>
-        Click
-        <a href="${process.env.bank_interface_url}/password-reset?token=${tokenObj._id}"> here</a> to
-        enter your new password.
-      </p>
-      <p>The link expires in 15 minutes.</p>
-    </div>
-  </body>
-</html>
-  `,
+        html: resetPasswordNotification(user.name, tokenObj._id),
       };
 
       transporter.sendMail(mailOptions, function (error, info) {
