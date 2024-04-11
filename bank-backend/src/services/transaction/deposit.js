@@ -1,7 +1,7 @@
-const { User, Global } = require("../models");
-const { ERRORS } = require("../utils/contants");
-const { logTransaction } = require("../utils/notification");
-const { getNextSequenceVal } = require("../models/Counter");
+const { User, Global } = require("../../models");
+const { ERRORS } = require("../../utils/contants");
+const { logTransaction } = require("../../utils/notification");
+const { getNextSequenceVal } = require("../../models/Counter");
 
 const depositService = async (req, res) => {
   try {

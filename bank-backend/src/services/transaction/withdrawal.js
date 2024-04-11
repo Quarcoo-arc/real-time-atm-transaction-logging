@@ -1,7 +1,7 @@
-const { User, Global } = require("../models");
-const { ERRORS } = require("../utils/contants");
-const { logTransaction } = require("../utils/notification");
-const { getNextSequenceVal } = require("../models/Counter");
+const { User, Global } = require("../../models");
+const { ERRORS } = require("../../utils/contants");
+const { logTransaction } = require("../../utils/notification");
+const { getNextSequenceVal } = require("../../models/Counter");
 
 const withdrawalService = async (req, res) => {
   try {
@@ -56,7 +56,7 @@ const withdrawalService = async (req, res) => {
       });
     }
     if (
-      globalVars.currentError !== NO_ERROR &&
+      globalVars.currentError !== ERRORS.NO_ERROR &&
       ERRORS[globalVars.currentError]
     ) {
       const err = globalVars.currentError

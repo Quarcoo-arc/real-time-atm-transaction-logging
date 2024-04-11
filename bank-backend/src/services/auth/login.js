@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
-const { User } = require("../models");
-const { loginNotification, transporter } = require("../../utils/notification");
+const { User } = require("../../models");
+const { transporter } = require("../../utils/notification");
+const { loginNotification } = require("../../utils/templates");
 const { authOptions } = require("../../config");
 
 const loginService = async (req, res, next) => {

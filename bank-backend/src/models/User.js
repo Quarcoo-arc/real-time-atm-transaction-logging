@@ -3,6 +3,7 @@ const { Schema, model } = mongoose;
 const { autoInc } = require("auto-increment-group");
 const encryption = require("mongoose-bcrypt");
 const uniqueValidator = require("mongoose-unique-validator");
+const { getAmount, setAmount } = require("../utils/helpers");
 require("mongoose-type-email");
 
 const userSchema = new Schema({

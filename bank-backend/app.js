@@ -5,7 +5,8 @@ const cors = require("cors");
 const { Strategy: JwtStrategy } = require("passport-jwt");
 const routes = require("./src/routes");
 const createError = require("http-errors");
-const { socket, app, connectDB, server } = require("./src/config");
+const { socket, app, connectDB, server, authOptions } = require("./src/config");
+const { User } = require("./src/models");
 
 require("dotenv").config();
 
@@ -49,7 +50,7 @@ passport.use(
 );
 
 passport.use(
-  new JwtStrategy(options, async (jwtPayload, done) => {
+  new JwtStrategy(authOptions, async (jwtPayload, done) => {
     try {
       const user = await User.findById(jwtPayload.id);
       return user

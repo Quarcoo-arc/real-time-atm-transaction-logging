@@ -38,27 +38,26 @@ const forgotPasswordService = async (req, res) => {
       transporter.sendMail(mailOptions, function (error, info) {
         if (error) {
           console.log(error, "Failed to send link to email");
-          res.json({
+          return res.json({
             success: false,
             message: "Failed to send link to your email",
           });
-        } else {
-          console.log(`Reset link sent to ${result.email}`);
-          res.json({
-            success: true,
-            message: "Successfully sent link to your email",
-          });
         }
+        console.log(`Reset link sent to ${user.email}`);
+        return res.json({
+          success: true,
+          message: "Successfully sent link to your email",
+        });
       });
     } catch (error) {
-      res.json({
+      return res.json({
         success: false,
         error,
         message: "Failed to send link to your email",
       });
     }
   } catch (error) {
-    res.json({
+    return res.json({
       success: false,
       error,
       message: "Failed to generate reset token",

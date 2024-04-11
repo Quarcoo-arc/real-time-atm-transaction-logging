@@ -1,10 +1,8 @@
 const jwt = require("jsonwebtoken");
-const { User } = require("../models");
-const {
-  registrationNotification,
-  transporter,
-} = require("../utils/notification");
-const { authOptions } = require("../config");
+const { User } = require("../../models");
+const { transporter } = require("../../utils/notification");
+const { registrationNotification } = require("../../utils/templates");
+const { authOptions } = require("../../config");
 
 const registrationService = async (req, res, next) => {
   try {
